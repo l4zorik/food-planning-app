@@ -5,11 +5,12 @@ import { MealPlanner } from '@/components/meal-planner'
 import { RecipeBrowser } from '@/components/recipe-browser'
 import { ShoppingList } from '@/components/shopping-list'
 import { Notes, type Note } from '@/components/notes'
+import { AiPlans } from '@/components/ai-plans'
 import { Button } from '@/components/ui/button'
-import { UtensilsCrossed, BookOpen, ShoppingCart, Lightbulb } from 'lucide-react'
+import { UtensilsCrossed, BookOpen, ShoppingCart, Lightbulb, Wand2 } from 'lucide-react'
 
 export default function Page() {
-  const [view, setView] = useState<'planner' | 'recipes' | 'shopping' | 'notes'>('planner')
+  const [view, setView] = useState<'planner' | 'recipes' | 'shopping' | 'notes' | 'ai'>('planner')
   const [meals, setMeals] = useState<Record<string, string>>({})
   const [ingredients, setIngredients] = useState<Record<string, boolean>>({})
   const [notes, setNotes] = useState<Note[]>([])
@@ -99,6 +100,14 @@ export default function Page() {
             )}
           </Button>
           <Button
+            onClick={() => setView('ai')}
+            variant={view === 'ai' ? 'default' : 'outline'}
+            className="gap-2"
+          >
+            <Wand2 className="size-4" />
+            AI Plans
+          </Button>
+          <Button
             onClick={() => setView('notes')}
             variant={view === 'notes' ? 'default' : 'outline'}
             className="gap-2"
@@ -133,6 +142,7 @@ export default function Page() {
             onToggleItem={handleToggleIngredient}
           />
         )}
+        {view === 'ai' && <AiPlans />}
         {view === 'notes' && (
           <Notes
             notes={notes}
