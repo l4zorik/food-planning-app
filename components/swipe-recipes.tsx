@@ -122,8 +122,10 @@ export function SwipeRecipes({ onAddToShoppingList }: SwipeRecipesProps) {
   const [dragEnd, setDragEnd] = useState(0)
 
   const currentRecipe = RECIPES[currentIndex]
+  const isComplete = currentIndex >= RECIPES.length
 
   const handleLike = () => {
+    if (!currentRecipe) return
     setLiked((prev) => new Set(prev).add(currentRecipe.id))
     setSwiped((prev) => new Set(prev).add(currentRecipe.id))
     moveToNext()
@@ -140,7 +142,7 @@ export function SwipeRecipes({ onAddToShoppingList }: SwipeRecipesProps) {
   }
 
   const moveToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % RECIPES.length)
+    setCurrentIndex((prev) => Math.min(prev + 1, RECIPES.length))
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -178,6 +180,43 @@ export function SwipeRecipes({ onAddToShoppingList }: SwipeRecipesProps) {
   const swipedCount = swiped.size
   const totalRecipes = RECIPES.length
   const progress = Math.round((swipedCount / totalRecipes) * 100)
+
+  if (isComplete) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Your Recipe Collection</h2>
+          <p className="mt-2 text-slate-600 dark:text-slate-400">All 8 recipes from your Discover session, ready to save or print.</p>
+        </div>
+        <div className="mx-auto w-full max-w-[794px] rounded-sm bg-white p-8 text-slate-900 shadow-2xl ring-1 ring-slate-200 dark:ring-slate-700 print:shadow-none">
+          <div className="border-b-2 border-slate-900 pb-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-600">Food Planner</p>
+            <h1 className="mt-2 text-3xl font-bold">Recipe Collection</h1>
+            <p className="mt-1 text-sm text-slate-500">Your complete Discover recipe sheet</p>
+          </div>
+          <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-6">
+            {RECIPES.map((recipe, index) => (
+              <article key={recipe.id} className="break-inside-avoid border-b border-slate-200 pb-4">
+                <div className="flex items-start gap-3">
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-orange-700">{index + 1}</span>
+                  <div className="min-w-0">
+                    <h3 className="font-bold leading-tight">{recipe.name}</h3>
+                    <p className="mt-1 text-xs text-slate-500">{recipe.cuisine} · {recipe.time} · {recipe.servings} servings</p>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-600">{recipe.ingredients.join(' · ')}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="mt-8 flex items-center justify-between border-t border-slate-200 pt-4 text-xs text-slate-500">
+            <span>{liked.size} liked recipes</span>
+            <span>Food Planner · Discover</span>
+          </div>
+        </div>
+        <Button onClick={() => setCurrentIndex(0)} variant="outline" className="mx-auto">Discover Again</Button>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6">
