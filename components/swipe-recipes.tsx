@@ -114,6 +114,7 @@ interface SwipeRecipesProps {
 }
 
 export function SwipeRecipes({ onAddToShoppingList }: SwipeRecipesProps) {
+  const [recipes, setRecipes] = useState<Recipe[]>(RECIPES)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [liked, setLiked] = useState<Set<string>>(new Set())
   const [swiped, setSwiped] = useState<Set<string>>(new Set())
@@ -121,8 +122,8 @@ export function SwipeRecipes({ onAddToShoppingList }: SwipeRecipesProps) {
   const [dragStart, setDragStart] = useState(0)
   const [dragEnd, setDragEnd] = useState(0)
 
-  const currentRecipe = RECIPES[currentIndex]
-  const isComplete = currentIndex >= RECIPES.length
+  const currentRecipe = recipes[currentIndex]
+  const isComplete = currentIndex >= recipes.length
 
   const handleLike = () => {
     if (!currentRecipe) return
@@ -142,7 +143,23 @@ export function SwipeRecipes({ onAddToShoppingList }: SwipeRecipesProps) {
   }
 
   const moveToNext = () => {
-    setCurrentIndex((prev) => Math.min(prev + 1, RECIPES.length))
+    setCurrentIndex((prev) => Math.min(prev + 1, recipes.length))
+  }
+
+  const shuffleRecipes = (items: Recipe[]) => {
+    const next = [...items]
+    for (let index = next.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1))
+      ;[next[index], next[randomIndex]] = [next[randomIndex], next[index]]
+    }
+    return next
+  }
+
+  const handleReset = () => {
+    setRecipes((previous) => shuffleRecipes(previous))
+    setCurrentIndex(0)
+    setLiked(new Set())
+    setSwiped(new Set())
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -195,7 +212,7 @@ export function SwipeRecipes({ onAddToShoppingList }: SwipeRecipesProps) {
             <p className="mt-1 text-sm text-slate-500">Your complete Discover recipe sheet</p>
           </div>
           <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-6">
-            {RECIPES.map((recipe, index) => (
+            {recipes.map((recipe, index) => (
               <article key={recipe.id} className="break-inside-avoid border-b border-slate-200 pb-4">
                 <div className="flex items-start gap-3">
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-orange-700">{index + 1}</span>
@@ -213,22 +230,18 @@ export function SwipeRecipes({ onAddToShoppingList }: SwipeRecipesProps) {
             <span>Food Planner · Discover</span>
           </div>
         </div>
-        <Button onClick={() => setCurrentIndex(0)} variant="outline" className="mx-auto">Discover Again</Button>
+        <Button onClick={handleReset} variant="outline" className="mx-auto">Reset and remix recommendations</Button>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Header */}
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-          Discover Recipes
-        </h2>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">
-          Swipe left to pass, right to like and add to shopping list
-        </p>
-      </div>
+    <div className="w-full">
+      {currentIndex < recipes.length ? (
+        <div className="flex flex-col items-center justify-center gap-8 py-12 px-4">
+          <div className="text-sm text-muted-foreground">
+            {currentIndex + 1}/{recipes.length} recipes • {Math.round(((currentIndex + 1) / recipes.length) * 100)}% explored
+          </div>
 
       {/* Progress Bar */}
       <div className="space-y-2">
@@ -372,6 +385,8 @@ export function SwipeRecipes({ onAddToShoppingList }: SwipeRecipesProps) {
           </div>
         </div>
       )}
+        </div>
+      ) : null}
     </div>
   )
 }
