@@ -4,13 +4,15 @@ import { useState } from 'react'
 import { MealPlanner } from '@/components/meal-planner'
 import { RecipeBrowser } from '@/components/recipe-browser'
 import { ShoppingList } from '@/components/shopping-list'
+import { Notes, type Note } from '@/components/notes'
 import { Button } from '@/components/ui/button'
-import { UtensilsCrossed, BookOpen, ShoppingCart } from 'lucide-react'
+import { UtensilsCrossed, BookOpen, ShoppingCart, Lightbulb } from 'lucide-react'
 
 export default function Page() {
-  const [view, setView] = useState<'planner' | 'recipes' | 'shopping'>('planner')
+  const [view, setView] = useState<'planner' | 'recipes' | 'shopping' | 'notes'>('planner')
   const [meals, setMeals] = useState<Record<string, string>>({})
   const [ingredients, setIngredients] = useState<Record<string, boolean>>({})
+  const [notes, setNotes] = useState<Note[]>([])
 
   const handleAddMeal = (day: string, recipe: string) => {
     setMeals((prev) => ({ ...prev, [day]: recipe }))
@@ -34,6 +36,18 @@ export default function Page() {
       ...prev,
       [item]: !prev[item],
     }))
+  }
+
+  const handleAddNote = (note: Note) => {
+    setNotes((prev) => [note, ...prev])
+  }
+
+  const handleDeleteNote = (id: string) => {
+    setNotes((prev) => prev.filter((note) => note.id !== id))
+  }
+
+  const handleUpdateNote = (id: string, updates: Partial<Note>) => {
+    setNotes((prev) => prev.map((note) => (note.id === id ? { ...note, ...updates } : note)))
   }
 
   return (
@@ -84,6 +98,19 @@ export default function Page() {
               </span>
             )}
           </Button>
+          <Button
+            onClick={() => setView('notes')}
+            variant={view === 'notes' ? 'default' : 'outline'}
+            className="gap-2"
+          >
+            <Lightbulb className="size-4" />
+            Notes
+            {notes.length > 0 && (
+              <span className="ml-1 inline-flex size-5 items-center justify-center rounded-full bg-yellow-500 text-xs font-semibold text-white">
+                {notes.length}
+              </span>
+            )}
+          </Button>
         </div>
       </nav>
 
@@ -104,6 +131,14 @@ export default function Page() {
           <ShoppingList
             items={ingredients}
             onToggleItem={handleToggleIngredient}
+          />
+        )}
+        {view === 'notes' && (
+          <Notes
+            notes={notes}
+            onAddNote={handleAddNote}
+            onDeleteNote={handleDeleteNote}
+            onUpdateNote={handleUpdateNote}
           />
         )}
       </section>
