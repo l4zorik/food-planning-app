@@ -230,7 +230,10 @@ export function SwipeRecipes({ onAddToShoppingList }: SwipeRecipesProps) {
             <span>Food Planner · Discover</span>
           </div>
         </div>
-        <Button onClick={handleReset} variant="outline" className="mx-auto">Reset and remix recommendations</Button>
+        <div className="flex flex-wrap justify-center gap-3">
+  <Button onClick={() => window.print()} className="bg-amber-600 hover:bg-amber-700">Save A4 recipe sheet</Button>
+  <Button onClick={handleReset} variant="outline">Reset and remix recommendations</Button>
+  </div>
       </div>
     )
   }

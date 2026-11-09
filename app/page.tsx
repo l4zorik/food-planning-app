@@ -7,11 +7,12 @@ import { ShoppingList } from '@/components/shopping-list'
 import { Notes, type Note } from '@/components/notes'
 import { AiPlans } from '@/components/ai-plans'
 import { SwipeRecipes } from '@/components/swipe-recipes'
+import { Keeps } from '@/components/keeps'
 import { Button } from '@/components/ui/button'
-import { UtensilsCrossed, BookOpen, ShoppingCart, Lightbulb, Wand2, Heart } from 'lucide-react'
+import { UtensilsCrossed, BookOpen, ShoppingCart, Lightbulb, Wand2, Heart, Pin } from 'lucide-react'
 
 export default function Page() {
-  const [view, setView] = useState<'planner' | 'recipes' | 'shopping' | 'notes' | 'ai' | 'dating'>('planner')
+  const [view, setView] = useState<'planner' | 'recipes' | 'shopping' | 'notes' | 'ai' | 'dating' | 'keeps'>('planner')
   const [meals, setMeals] = useState<Record<string, string>>({})
   const [ingredients, setIngredients] = useState<Record<string, boolean>>({})
   const [notes, setNotes] = useState<Note[]>([])
@@ -129,6 +130,14 @@ export default function Page() {
             <Heart className="size-4" />
             Discover
           </Button>
+          <Button
+            onClick={() => setView('keeps')}
+            variant={view === 'keeps' ? 'default' : 'outline'}
+            className="gap-2"
+          >
+            <Pin className="size-4" />
+            Keeps
+          </Button>
         </div>
       </nav>
 
@@ -163,6 +172,7 @@ export default function Page() {
             onUpdateNote={handleUpdateNote}
           />
         )}
+        {view === 'keeps' && <Keeps />}
       </section>
     </main>
   )
