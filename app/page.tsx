@@ -6,11 +6,12 @@ import { RecipeBrowser } from '@/components/recipe-browser'
 import { ShoppingList } from '@/components/shopping-list'
 import { Notes, type Note } from '@/components/notes'
 import { AiPlans } from '@/components/ai-plans'
+import { SwipeRecipes } from '@/components/swipe-recipes'
 import { Button } from '@/components/ui/button'
-import { UtensilsCrossed, BookOpen, ShoppingCart, Lightbulb, Wand2 } from 'lucide-react'
+import { UtensilsCrossed, BookOpen, ShoppingCart, Lightbulb, Wand2, Heart } from 'lucide-react'
 
 export default function Page() {
-  const [view, setView] = useState<'planner' | 'recipes' | 'shopping' | 'notes' | 'ai'>('planner')
+  const [view, setView] = useState<'planner' | 'recipes' | 'shopping' | 'notes' | 'ai' | 'dating'>('planner')
   const [meals, setMeals] = useState<Record<string, string>>({})
   const [ingredients, setIngredients] = useState<Record<string, boolean>>({})
   const [notes, setNotes] = useState<Note[]>([])
@@ -120,6 +121,14 @@ export default function Page() {
               </span>
             )}
           </Button>
+          <Button
+            onClick={() => setView('dating')}
+            variant={view === 'dating' ? 'default' : 'outline'}
+            className="gap-2"
+          >
+            <Heart className="size-4" />
+            Discover
+          </Button>
         </div>
       </nav>
 
@@ -143,6 +152,9 @@ export default function Page() {
           />
         )}
         {view === 'ai' && <AiPlans />}
+        {view === 'dating' && (
+          <SwipeRecipes onAddToShoppingList={handleAddIngredients} />
+        )}
         {view === 'notes' && (
           <Notes
             notes={notes}
