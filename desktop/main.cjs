@@ -33,6 +33,10 @@ async function readLimited(filename, max) {
   if (!stat.isFile() || stat.size > max) throw Error('The selected file is too large.')
   return fs.readFile(filename)
 }
+function checkExportPath(filename) {
+  const target = path.resolve(filename).toLowerCase(), dataRoot = path.resolve(store.directory).toLowerCase()
+  if (target === dataRoot || target.startsWith(dataRoot + path.sep)) throw Error('Choose a location outside the application data folder for this export.')
+}
 async function serveMedia(request) {
   const url = new URL(request.url)
   const name = url.pathname.slice(1)
@@ -120,6 +124,7 @@ else {
     handle('backup:export', async () => {
       const result = await dialog.showSaveDialog(window, { defaultPath: `Meal-Planner-backup-${new Date().toISOString().slice(0, 10)}.json`, filters: [{ name: 'Meal Planner backup', extensions: ['json'] }] })
       if (result.canceled || !result.filePath) return false
+      checkExportPath(result.filePath)
       await fs.writeFile(result.filePath, await store.backup(), { mode: 0o600 })
       return true
     })
@@ -136,6 +141,7 @@ else {
       const result = await dialog.showSaveDialog(window, { defaultPath: 'Meal-Planner-A4.pdf', filters: [{ name: 'PDF document', extensions: ['pdf'] }] })
       if (result.canceled || !result.filePath) return false
       const pdf = await window.webContents.printToPDF({ pageSize: 'A4', printBackground: true, preferCSSPageSize: true })
+      checkExportPath(result.filePath)
       await fs.writeFile(result.filePath, pdf, { mode: 0o600 })
       return true
     })

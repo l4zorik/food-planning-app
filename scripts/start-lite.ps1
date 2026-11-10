@@ -18,9 +18,19 @@ else {
 }
 $desktopPath = Join-Path $projectRoot 'desktop'
 $liteProcess = Start-Process -FilePath $electronBinary -ArgumentList ('"' + $desktopPath + '"') -WorkingDirectory $projectRoot -PassThru -RedirectStandardError (Join-Path $runtimeRoot 'lite-stderr.log') -RedirectStandardOutput (Join-Path $runtimeRoot 'lite-stdout.log')
-if ($liteProcess.WaitForExit(3500)) {
-    Write-Host 'Electron closed during startup. Diagnostic log:'
+$visibleWindow = $false
+for ($attempt = 0; $attempt -lt 50; $attempt++) {
+    Start-Sleep -Milliseconds 200
+    $liteProcess.Refresh()
+    if ($liteProcess.HasExited) { break }
+    $diagnostic = Get-Content -LiteralPath (Join-Path $runtimeRoot 'lite-stderr.log') -Raw -ErrorAction SilentlyContinue
+    if ($diagnostic -match 'FATAL:|GPU process isn.t usable') { break }
+    if ($liteProcess.MainWindowHandle -ne [IntPtr]::Zero -and $liteProcess.MainWindowTitle -like '*Meal Planner Lite*') { $visibleWindow = $true; break }
+}
+if (-not $visibleWindow) {
+    Write-Host 'A usable Electron window did not open. Diagnostic log:'
     Get-Content -LiteralPath (Join-Path $runtimeRoot 'lite-stderr.log') -Tail 14
+    if (-not $liteProcess.HasExited) { $liteProcess.Kill() }
     exit 1
 }
-Write-Host "My Meal Planner Lite is running (PID $($liteProcess.Id))."
+Write-Host "My Meal Planner Lite is open (PID $($liteProcess.Id))."
