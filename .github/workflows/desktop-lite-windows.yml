@@ -1,0 +1,28 @@
+name: Build Windows Lite
+on:
+  workflow_dispatch:
+  push:
+    branches: [electron-desktop]
+    paths: ['desktop/**', 'lib/themes.ts', 'tests/**', 'scripts/build-lite.ps1', '.github/workflows/desktop-lite-windows.yml']
+permissions:
+  contents: read
+jobs:
+  lite:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test and package the Lite desktop
+        shell: pwsh
+        run: ./scripts/build-lite.ps1
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: My-Meal-Planner-Lite-Windows
+          path: release/*.exe
+          if-no-files-found: error
+          retention-days: 14

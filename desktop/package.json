@@ -1,0 +1,29 @@
+{
+  "name": "personal-meal-planner-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "productName": "My Meal Planner Lite",
+  "description": "Personal offline meal planner and keeps",
+  "author": "Personal use",
+  "main": "main.cjs",
+  "scripts": {
+    "build": "node --check main.cjs && node --check preload.cjs && node --check store.cjs && node --check lite/app.js",
+    "start": "electron .",
+    "pack": "electron-builder --win portable --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "45.2.3",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "cz.personal.mealplanner",
+    "productName": "My Meal Planner Lite",
+    "asar": true,
+    "npmRebuild": false,
+    "directories": { "output": "../release" },
+    "files": ["main.cjs", "preload.cjs", "store.cjs", "lite/**/*", "package.json"],
+    "win": { "target": "portable", "signAndEditExecutable": false },
+    "artifactName": "My-Meal-Planner-Lite-${version}-Windows.${ext}"
+  }
+}

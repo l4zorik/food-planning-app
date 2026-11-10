@@ -1,0 +1,187 @@
+{
+  "repository": "https://github.com/l4zorik/food-planning-app.git",
+  "commit": "484eb718cae20a8ad7f60326ca6641c0a5036a18",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha": "f650315f30180800d0fed8ed1e7ceade266e9e71",
+      "size": 313
+    },
+    {
+      "path": "components.json",
+      "sha": "45921ecdea324a57c73917317f80bcd77a3978d6",
+      "size": 428
+    },
+    {
+      "path": "next.config.mjs",
+      "sha": "4cd9948a8a149f8f7338fd7757d5b22303e1fb9f",
+      "size": 181
+    },
+    {
+      "path": "package.json",
+      "sha": "9c1032ca7299876d5bfed460d4af92d95802594d",
+      "size": 809
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha": "fad42147454dde0951f6d6866b49c4d345d6e8e7",
+      "size": 115473
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "sha": "b5d8774d084909a3f2a1481980fbc383fa2db066",
+      "size": 67
+    },
+    {
+      "path": "postcss.config.mjs",
+      "sha": "a869506ee48c89838ee770863c5d99ba97eeb930",
+      "size": 144
+    },
+    {
+      "path": "tsconfig.json",
+      "sha": "d3a3fd16c89990bb94c74f13ee4e3b7f08cf72cb",
+      "size": 647
+    },
+    {
+      "path": "app/globals.css",
+      "sha": "635d39f67725a9c44391a7a77cc1acc37bcf8c92",
+      "size": 5482
+    },
+    {
+      "path": "app/layout.tsx",
+      "sha": "17b95e9a0e36e05235ed2458b6eccf310d0bb836",
+      "size": 1197
+    },
+    {
+      "path": "app/page.tsx",
+      "sha": "7a90fdfd022d9b16ad579b0b8e5db6b9bee9dcb3",
+      "size": 6113
+    },
+    {
+      "path": "components/meal-planner.tsx",
+      "sha": "554719e0812a4d86a80d271dcb1bfc88c1a09e82",
+      "size": 3861
+    },
+    {
+      "path": "components/notes.tsx",
+      "sha": "43c59cdb67f38dda88630df44244453958c88435",
+      "size": 7174
+    },
+    {
+      "path": "components/recipe-browser.tsx",
+      "sha": "eb88de34f0ed84fccf26265dd83973b9107fccbe",
+      "size": 7097
+    },
+    {
+      "path": "components/shopping-list.tsx",
+      "sha": "719be0496112f0f101082da907ebde9e917c97bf",
+      "size": 6552
+    },
+    {
+      "path": "lib/utils.ts",
+      "sha": "fed2fe91e4d2321f997c0209881db87fe0d07ba9",
+      "size": 166
+    },
+    {
+      "path": "public/apple-icon.png",
+      "sha": "f9418b406bdb93a28dfc30c2ea61bef97b9d7c22",
+      "size": 2626
+    },
+    {
+      "path": "public/icon-dark-32x32.png",
+      "sha": "12c825a109e3c3b7941d957d8a2ac936d5717c5b",
+      "size": 585
+    },
+    {
+      "path": "public/icon-light-32x32.png",
+      "sha": "a3462ccd8a6f9c1da6893d213f8868200cf3c80a",
+      "size": 566
+    },
+    {
+      "path": "public/icon.svg",
+      "sha": "5c11e6c50d2df379c5018d3bca984c866097ad58",
+      "size": 1304
+    },
+    {
+      "path": "public/meal-hero.png",
+      "sha": "9fbdebcce495e1895001f56937b6612bbd9a5ba0",
+      "size": 1833837
+    },
+    {
+      "path": "public/placeholder-logo.png",
+      "sha": "8a792ac2ddfbe047639f7907c82f14c73e3de3d9",
+      "size": 568
+    },
+    {
+      "path": "public/placeholder-logo.svg",
+      "sha": "b1695aafcd5925a0b3eb122b9e553b8a0f4a0d47",
+      "size": 3208
+    },
+    {
+      "path": "public/placeholder-user.jpg",
+      "sha": "6fa7543d38ed8fdb38f03b5c0f40ad2d66827d4a",
+      "size": 1635
+    },
+    {
+      "path": "public/placeholder.jpg",
+      "sha": "6bfe96336dbe567f5f1e9129f5bccdc78b114bba",
+      "size": 1064
+    },
+    {
+      "path": "public/placeholder.svg",
+      "sha": "e763910b27fdd9ac872f56baede51bc839402347",
+      "size": 3253
+    },
+    {
+      "path": "components/ui/badge.tsx",
+      "sha": "6bc28c30ee309a4a5d53fe3e10e7394dd2034d1d",
+      "size": 1915
+    },
+    {
+      "path": "components/ui/button.tsx",
+      "sha": "b520e8718163a48ed9abc79cbc51028b7e4b1fcb",
+      "size": 3198
+    },
+    {
+      "path": "components/ui/card.tsx",
+      "sha": "588f6fd2f15dab8df794ecb32d7e2227371a3302",
+      "size": 2607
+    },
+    {
+      "path": "components/ui/checkbox.tsx",
+      "sha": "e1a35742dbbbc15a4926fa62ac6f927e3553c5ba",
+      "size": 1529
+    },
+    {
+      "path": "components/ui/input.tsx",
+      "sha": "7c4ab5ab5ed4872687e2c7e41eac38d50c9e7bf5",
+      "size": 1030
+    },
+    {
+      "path": "components/ui/textarea.tsx",
+      "sha": "5141de794cdc57aa317c8beba328a7284475d767",
+      "size": 832
+    },
+    {
+      "path": "components/ai-plans.tsx",
+      "sha": "f35a0bed2e4947521546e7f915bcddefdc7de174",
+      "size": 10075
+    },
+    {
+      "path": "components/keeps.tsx",
+      "sha": "4e4d22f29be92d3766a652b897ea2845047dac8c",
+      "size": 6405
+    },
+    {
+      "path": "components/swipe-recipes.tsx",
+      "sha": "5924022e4a37cd22c6552051fbd4da695a013db4",
+      "size": 14380
+    },
+    {
+      "path": "app/api/generate-meal-plan/route.ts",
+      "sha": "c714b42df61b8d21ef25c256c0dba9a44e88e867",
+      "size": 1459
+    }
+  ],
+  "branch": "v0/ai-meal-plans"
+}
