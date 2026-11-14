@@ -7,7 +7,7 @@ try {
         & $Command @Arguments
         if ($LASTEXITCODE -ne 0) { throw "$Command failed with exit code $LASTEXITCODE" }
     }
-    Invoke-Checked node @('--experimental-strip-types', '--test', 'tests/themes.test.mjs', 'tests/desktop-store.test.cjs')
+    Invoke-Checked node @('--experimental-strip-types', '--test', 'tests/themes.test.mjs', 'tests/desktop-store.test.cjs', 'tests/desktop-startup.test.cjs')
     Push-Location -LiteralPath (Join-Path $projectRoot 'desktop')
     try {
         $installMode = if (Test-Path -LiteralPath package-lock.json) { 'ci' } else { 'install' }

@@ -1,8 +1,22 @@
 import { themeCatalog, defaultPreference, readPreference, resolveTheme, themeVariables } from './themes.js'
+import { setupUpdates } from './updates.js'
+import { moveKeep } from './keep-order.js'
+import { setupKeepActions } from './keep-actions.js'
+import { setupKeepDrag } from './keep-drag.js'
+import { applyKeepStyle, renderRichText } from './keep-style.js'
 
 const api = window.personalDesktop
 const $ = id => document.getElementById(id)
-let state = {}, ready = false, showAll = false, attachment = null, saveTimer, pending = Promise.resolve(), revision = 0
+let state = {}, ready = false, attachment = null, saveTimer, pending = Promise.resolve(), revision = 0
+const keepActions = setupKeepActions({
+  getKeeps: () => state.keeps || [],
+  update: (id, replacement) => { state.keeps = (state.keeps || []).map(keep => keep.id === id ? replacement : keep); queueSave(); renderKeeps() },
+  removeTag: (id, tag) => { state.keeps = (state.keeps || []).map(keep => keep.id === id ? { ...keep, tags: (keep.tags || []).filter(item => item !== tag) } : keep); queueSave(); renderKeeps() },
+})
+const keepDrag = setupKeepDrag({ reorder: reorderKeep, canMove: (id, targetId) => {
+  const source = (state.keeps || []).find(keep => keep.id === id), target = (state.keeps || []).find(keep => keep.id === targetId)
+  return !!source && !!target && !!source.pinned === !!target.pinned
+} })
 const days = [['Monday','Pondělí'],['Tuesday','Úterý'],['Wednesday','Středa'],['Thursday','Čtvrtek'],['Friday','Pátek'],['Saturday','Sobota'],['Sunday','Neděle']]
 
 function element(tag, text, className) {
@@ -29,7 +43,9 @@ function flush() {
   return operation
 }
 function selectView(view) {
-  for (const panel of ['week','shopping','keeps']) $(panel).hidden = panel !== view
+  keepActions.close()
+  for (const panel of ['week','shopping','keeps','erp']) $(panel).hidden = panel !== view
+  document.querySelector('.welcome').hidden = view === 'erp'
   for (const button of document.querySelectorAll('[data-view]')) button.setAttribute('aria-pressed', String(button.dataset.view === view))
 }
 
@@ -58,38 +74,85 @@ function renderShopping() {
     row.append(check, label, remove); $('shopping-items').append(row)
   }
 }
+function clearKeepDrag() { keepDrag.clear() }
+function reorderKeep(id, targetId) {
+  const source = (state.keeps || []).find(keep => keep.id === id), destination = (state.keeps || []).find(keep => keep.id === targetId)
+  if (!source || !destination || !!source.pinned !== !!destination.pinned) return
+  const reordered = moveKeep(state.keeps || [], id, targetId)
+  if (reordered === state.keeps) return
+  state.keeps = reordered
+  clearKeepDrag(); queueSave(); renderKeeps()
+}
 function renderKeeps() {
+  clearKeepDrag()
   $('keep-cards').replaceChildren()
-  const keeps = state.keeps || []
-  $('show-all').textContent = showAll ? 'Všechny Keeps' : 'Posledních 7'
-  const visible = showAll ? keeps : keeps.slice(0, 7)
-  if (!visible.length) $('keep-cards').append(element('p', 'První nápad si můžeš uložit hned teď.'))
-  for (const keep of visible) {
+  const allKeeps = state.keeps || [], group = $('keep-group-filter').value
+  const groups = [...new Set(allKeeps.map(keep => keep.group).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'cs'))
+  const allOption = element('option', 'Všechny skupiny'); allOption.value = ''
+  $('keep-group-filter').replaceChildren(allOption, ...groups.map(name => { const option = element('option', name); option.value = name; return option }))
+  $('keep-group-filter').value = groups.includes(group) ? group : ''
+  const keeps = allKeeps.filter(keep => !$('keep-group-filter').value || keep.group === $('keep-group-filter').value).sort((a, b) => Number(!!b.pinned) - Number(!!a.pinned))
+  $('keep-count').textContent = `Celkem: ${allKeeps.length}`
+  if (!keeps.length) $('keep-cards').append(element('p', 'První nápad si můžeš uložit hned teď.'))
+  for (const keep of keeps) {
     const card = element('article', undefined, 'keep-card'), remove = element('button', 'Smazat', 'delete')
+    card.dataset.keepId = keep.id
+    keepActions.attach(card, keep)
+    if (keep.pinned) card.classList.add('is-pinned')
+    if (keep.completed) card.classList.add('is-completed')
+    keepDrag.attach(card, keep)
+    applyKeepStyle(card, keep)
+    const grip = element('button', '⠿', 'keep-grip')
+    grip.type = 'button'
+    grip.title = 'Přetáhni kartu nebo ji přesuň šipkami na klávesnici'
+    grip.setAttribute('aria-label', `Přesunout ${keep.title}`)
+    grip.setAttribute('aria-describedby', 'keep-order-help')
+    grip.addEventListener('keydown', event => {
+      const index = keeps.findIndex(item => item.id === keep.id)
+      const target = { ArrowLeft: index - 1, ArrowUp: index - 1, ArrowRight: index + 1, ArrowDown: index + 1, Home: 0, End: keeps.length - 1 }[event.key]
+      if (target === undefined) return
+      event.preventDefault()
+      if (!keeps[target] || target === index) return
+      reorderKeep(keep.id, keeps[target].id)
+      Array.from($('keep-cards').children).find(node => node.dataset.keepId === keep.id)?.querySelector('.keep-grip').focus()
+    })
     remove.setAttribute('aria-label', `Smazat ${keep.title}`)
-    remove.addEventListener('click', () => { state.keeps = keeps.filter(k => k.id !== keep.id); queueSave(); renderKeeps() })
-    card.append(remove, element('h3', keep.title))
+    remove.addEventListener('click', () => { state.keeps = (state.keeps || []).filter(k => k.id !== keep.id); queueSave(); renderKeeps() })
+    card.append(remove, grip, element('h3', keep.title))
+    const badges = element('div', undefined, 'keep-badges')
+    if (keep.pinned) badges.append(element('span', '📌 Připnuto'))
+    if (keep.completed) badges.append(element('span', '✓ Hotovo'))
+    if (badges.children.length) card.append(badges)
     if (keep.kind === 'todo') {
       const todos = keep.todos || [{ id: keep.id, text: keep.content, done: !!keep.completed }]
       for (const todo of todos) {
         const row = element('label', undefined, 'todo-row'), check = element('input'), text = element('span', todo.text, todo.done ? 'done' : '')
         check.type = 'checkbox'; check.checked = todo.done
-        check.addEventListener('change', () => { todo.done = check.checked; keep.todos = todos; keep.completed = todos.every(item => item.done); queueSave(); renderKeeps() })
+        check.addEventListener('change', () => { todo.done = check.checked; keep.todos = todos; keep.richText = undefined; keep.content = todos.map(item => item.text).join('\n'); keep.completed = todos.every(item => item.done); queueSave(); renderKeeps() })
         row.append(check, text); card.append(row)
       }
-    } else card.append(element('p', keep.content))
+    } else {
+      const text = element('div', undefined, 'keep-rich-content')
+      renderRichText(text, keep.richText, keep.content); card.append(text)
+    }
     if (keep.mediaUrl) {
-      const media = element(keep.kind === 'video' ? 'video' : 'img')
+      const mediaKind = keep.mediaKind || keep.kind
+      const media = element(mediaKind === 'video' ? 'video' : 'img')
       media.src = keep.mediaUrl
-      if (keep.kind === 'video') { media.controls = true; media.preload = 'metadata' }
+      if (mediaKind === 'video') { media.controls = true; media.preload = 'metadata' }
       else media.alt = keep.title
       card.append(media)
     }
+    const tags = element('div', undefined, 'keep-tags')
+    for (const tag of keep.tags || []) tags.append(element('span', `#${tag}`))
+    if (keep.group) tags.append(element('span', `Skupina: ${keep.group}`, 'keep-group'))
+    if (tags.children.length) card.append(tags)
     const date = new Date(keep.createdAt)
     card.append(element('small', Number.isFinite(date.getTime()) ? date.toLocaleString('cs-CZ') : keep.createdAt))
     $('keep-cards').append(card)
   }
 }
+$('keep-group-filter').addEventListener('change', renderKeeps)
 
 function applyTheme() {
   const preference = readPreference(JSON.stringify(state.theme || defaultPreference))
@@ -128,7 +191,6 @@ $('keep-form').addEventListener('submit', event => {
   $('keep-title').value = ''; $('keep-text').value = ''; $('attachment-label').textContent = ''; attachment = null
   queueSave(); renderKeeps()
 })
-$('show-all').addEventListener('click', () => { showAll = !showAll; renderKeeps() })
 $('import-media').addEventListener('click', async () => {
   try {
     const imported = await api.importMedia()
@@ -148,7 +210,7 @@ $('export-backup').addEventListener('click', async () => {
 $('restore-backup').addEventListener('click', async () => {
   try {
     if (ready) await flush()
-    if (await api.importBackup()) { const loaded = await api.load(); state = loaded.state; ready = true; renderAll(); error(''); status('Záloha obnovena') }
+    if (await api.importBackup()) { keepActions.close(); const loaded = await api.load(); state = loaded.state; ready = true; renderAll(); error(''); status('Záloha obnovena') }
   } catch (e) { error(e.message) }
 })
 $('save-pdf').addEventListener('click', async () => { try { await flush(); await api.savePdf() } catch (e) { error(e.message) } })
@@ -163,4 +225,6 @@ else {
     setInterval(applyTheme, 30000)
     window.addEventListener('focus', applyTheme)
   } catch (e) { error(e.message); status('Data nelze načíst') }
+  try { await setupUpdates(api) } catch (e) { error(e.message) }
+  await api.ready()
 }

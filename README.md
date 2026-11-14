@@ -4,11 +4,23 @@ Osobní Windows aplikace je v `desktop/`, samostatná větev GitHubu: `electron-
 
 ## Spustit Lite
 
-Dvojklik na **Start-Lite.cmd**. Spouštěč preferuje nainstalovaný Electron; na tomto počítači umí použít také již uloženou offline cache. Data vývojové verze jsou v ignorované složce `.local-data/personal-data`, mimo Git.
+Dvojklik na **Start-Lite.vbs** spustí aplikaci bez terminálu, s úvodním logem. Původní `Start-Lite.cmd` předá spuštění stejnému spouštěči, při dvojkliku ale může krátce probliknout konzole. Runtime musí odpovídat verzi v `desktop/package.json`; automatický návrat ke starému preview byl odstraněn. Data vývojové verze jsou v ignorované složce `.local-data/personal-data`, mimo Git.
 
-Lite obsahuje týdenní plán, nákupní seznam, Keeps s poznámkami a úkoly po řádcích, import fotek/GIFů/videí, posledních 7 nebo všechny Keeps, automatické ukládání, zálohy včetně médií, A4 PDF a 60 motivů. Je bez React buildu a bez síťových služeb. AI a Discover zůstávají ve webovém základu; v Lite nejsou součástí rozhraní.
+Při každém startu se otevře přehled **Co je nového**. V něm rozbalte **Vaše firma, vaše logo** a zadejte název firmy nebo vyberte PNG/JPEG. Značka se uloží lokálně a použije se i na úvodní obrazovce dalšího spuštění. Přehled lze zavřít tlačítkem **Pojďme plánovat**, křížkem nebo Escape a znovu otevřít z hlavičky. [Úplný seznam změn](CHANGELOG.md).
+
+## Kde je aplikace ke stažení / instalaci
+
+Přenosný balíček: `release/My-Meal-Planner-Lite-0.3.0-Windows.zip`. Rozbalte **celý** ZIP a spusťte `MealPlanner.exe`. Nepotřebujete Node.js ani instalaci závislostí. Samotné EXE neoddělujte od ostatních souborů. ZIP je přenosná aplikace, nikoli klasický instalátor; uživatelská data zůstávají v profilu Windows.
+
+Přenosný balíček lze bez npm sestavit pomocí `scripts/package-lite-offline.ps1`, pokud je už připravený runtime. Klasický NSIS instalátor vytvoří níže uvedený síťový build. V tomto prostředí se jeho sestavení zastavilo na blokovaném přístupu k npm, takže soubor Setup zde zatím není.
+
+Vývojová a přenosná verze mají oddělené datové složky. Pro přesun dat použijte **Zálohovat** ve staré verzi a **Obnovit** v nové.
+
+Lite obsahuje týdenní plán, nákupní seznam, Keeps s poznámkami a úkoly po řádcích, import fotek/GIFů/videí, všechny Keeps na automaticky rostoucí nástěnce s přesouváním karet a bez pevných limitů velikosti, automatické ukládání, zálohy včetně médií, A4 PDF a 60 motivů. Je bez React buildu a bez síťových služeb. AI a Discover zůstávají ve webovém základu; v Lite nejsou součástí rozhraní.
 
 Podrobný návod: [desktop/README.md](desktop/README.md).
+
+Čtvrtá sekce **04 ERP** vedle **Keeps & poznámky** je připraveným prostorem pro budoucí řízení firmy. Obsahuje přehled plánovaných oblastí (klienti a zakázky, finance, tým a úkoly, AI asistent). Firemní evidence ani AI služby v této verzi ještě nejsou implementované.
 
 ## Vytvořit Windows EXE
 
@@ -18,15 +30,15 @@ S přístupem k internetu a Node.js:
 .\scripts\build-lite.ps1
 ```
 
-Výsledek: `release/My-Meal-Planner-Lite-0.1.0-Windows.exe`. Stejné sestavení může spustit workflow **Build Windows Lite** na GitHub Actions; hotové EXE bude artifact úspěšného běhu. EXE není commitováno do zdrojových souborů.
+Výsledky úspěšného sestavení: `release/My-Meal-Planner-Lite-Setup-0.3.0.exe` (instalátor se zástupcem na ploše a v nabídce Start) a `release/My-Meal-Planner-Lite-0.3.0-Portable.exe`. Stejné sestavení může spustit workflow **Build Windows Lite** na GitHub Actions; hotová EXE budou artifact úspěšného běhu. EXE nejsou commitována do zdrojových souborů.
 
 ## Ověření
 
 ```powershell
-node --experimental-strip-types --test tests/themes.test.mjs tests/desktop-store.test.cjs
+node --experimental-strip-types --test tests/themes.test.mjs tests/desktop-store.test.cjs tests/desktop-startup.test.cjs tests/keep-order.test.mjs tests/keep-actions.test.mjs tests/keep-style.test.mjs tests/keep-drag.test.mjs
 ```
 
-11 automatických testů prošlo: ukládání po restartu, souběžné zápisy, přenos médií v záloze, validace a obnova poškozených dat a všechny motivy. Skutečný pokus o spuštění v pracovním prostředí skončil pádem GPU podprocesu Electronu `0xC0000135`; funkční GUI ani PDF v Electronu zde zatím potvrzené nejsou. Sandbox a webSecurity zůstávají zapnuté. Pro lokální zkoušku byl použit Electron 39.8.10 z existující cache; nové balíčky mají připnutý Electron 45.2.3.
+25 automatických testů prošlo: ukládání, souběžné zápisy, přenos médií, obnova poškozených dat, motivy, startovací potvrzení, firemní značka, pořadí Keeps, velké poznámky, konverze checklistů, metadata a nabídka s editorem, formátování, kontrast barev a přesouvání s rolováním. Syntaktické kontroly desktopu prošly. Runtime 45.2.3 je připravený a přenosný ZIP sestavený. Pokus o spuštění v pracovním prostředí stále skončil pádem GPU podprocesu `0xC0000135` a rendereru `launch-failed` (49). Funkční GUI ani PDF zde tedy zatím nejsou potvrzené. Spouštěč ukládá podrobnosti do `.runtime/startup-error.log`; sandbox a webSecurity zůstávají zapnuté.
 
 ## Webový základ
 

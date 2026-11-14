@@ -2,6 +2,9 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('personalDesktop', Object.freeze({
   load: () => ipcRenderer.invoke('data:load'),
+  ready: () => ipcRenderer.invoke('app:ready'),
+  loadBrand: () => ipcRenderer.invoke('branding:load'),
+  saveBrand: (name, chooseLogo) => ipcRenderer.invoke('branding:save', name, chooseLogo),
   save: state => ipcRenderer.invoke('data:save', state),
   importMedia: () => ipcRenderer.invoke('media:import'),
   exportBackup: () => ipcRenderer.invoke('backup:export'),

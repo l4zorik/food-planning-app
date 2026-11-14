@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent, useMemo, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { FileText, Image as ImageIcon, ListChecks, Plus, Save, Trash2, Video } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -33,8 +33,6 @@ export function Keeps() {
   const [content, setContent] = useState('')
   const [kind, setKind] = useState<KeepKind>('note')
   const [mediaUrl, setMediaUrl] = useState('')
-
-  const recentKeeps = useMemo(() => keeps.slice(0, 7), [keeps])
 
   const addKeep = () => {
     if (!title.trim() && !content.trim() && !mediaUrl.trim()) return
@@ -82,7 +80,7 @@ export function Keeps() {
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {recentKeeps.map((keep) => <Card key={keep.id} className="group relative overflow-hidden border-amber-200 bg-amber-50/70 p-5 dark:border-slate-700 dark:bg-slate-800/80">
+        {keeps.map((keep) => <Card key={keep.id} className="group relative overflow-hidden border-amber-200 bg-amber-50/70 p-5 dark:border-slate-700 dark:bg-slate-800/80">
           <div className="mb-3 flex items-center justify-between"><span className="rounded-full bg-white/80 px-2 py-1 text-xs font-semibold text-amber-700 dark:bg-slate-700 dark:text-amber-300">{kindLabels[keep.kind]}</span><button aria-label={`Delete ${keep.title}`} onClick={() => removeKeep(keep.id)} className="text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"><Trash2 data-icon="inline-start" /></button></div>
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{keep.title}</h3>
           {keep.kind === 'todo' ? <label className="mt-3 flex gap-2 text-sm"><input type="checkbox" checked={keep.completed} onChange={() => toggleTodo(keep.id)} /> <span className={keep.completed ? 'line-through text-muted-foreground' : ''}>{keep.content}</span></label> : <p className="mt-2 whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">{keep.content}</p>}
@@ -90,7 +88,7 @@ export function Keeps() {
           <p className="mt-4 text-xs text-muted-foreground">{keep.createdAt}</p>
         </Card>)}
       </div>
-      <p className="text-center text-xs text-muted-foreground">Showing the last {recentKeeps.length} keeps. New keeps appear first.</p>
+      <p className="text-center text-xs text-muted-foreground">Total keeps: {keeps.length}. New keeps appear first.</p>
     </div>
   )
 }

@@ -4,6 +4,26 @@ const fs = require('node:fs/promises')
 const os = require('node:os')
 const path = require('node:path')
 const { DataStore, validateState, inspectMedia } = require('../desktop/store.cjs')
+const { spawnSync } = require('node:child_process')
+
+test('backup filename follows the current local day across midnight and year boundaries', () => {
+  const result = spawnSync(process.execPath, ['-e', `
+    const { backupFilename } = require('./desktop/store.cjs');
+    console.log(JSON.stringify([
+      backupFilename(new Date('2026-11-12T22:59:00Z')),
+      backupFilename(new Date('2026-11-12T23:01:00Z')),
+      backupFilename(new Date('2026-12-31T23:01:00Z')),
+      backupFilename(new Date('2026-07-01T22:01:00Z')),
+    ]));
+  `], { cwd: path.resolve(__dirname, '..'), env: { ...process.env, TZ: 'Europe/Prague' }, encoding: 'utf8' })
+  assert.equal(result.status, 0, result.stderr)
+  assert.deepEqual(JSON.parse(result.stdout), [
+    'Meal-Planner-backup-2026-11-12.json',
+    'Meal-Planner-backup-2026-11-13.json',
+    'Meal-Planner-backup-2027-01-01.json',
+    'Meal-Planner-backup-2026-07-02.json',
+  ])
+})
 
 async function fixture(t) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'meal-planner-test-'))
@@ -28,10 +48,22 @@ test('concurrent saves remain ordered and keep the last update', async t => {
   await Promise.all(Array.from({ length: 20 }, (_, i) => store.save({ meals: { Monday: String(i) } })))
   assert.equal((await store.load()).meals.Monday, '19')
 })
+
+test('large Keeps and their board order survive saving, restart, backup and restore', async t => {
+  const first = await fixture(t), second = await fixture(t)
+  const keeps = [
+    { id: 'last-moved-first', title: 'Long title '.repeat(30), content: 'x'.repeat(5 * 1024 * 1024), kind: 'note', createdAt: '2026-11-14' },
+    ...Array.from({ length: 20 }, (_, index) => ({ id: String(index), title: `Keep ${index}`, content: 'Text', kind: 'note', createdAt: '2026-11-14' })),
+  ]
+  await first.save({ keeps })
+  assert.deepEqual((await new DataStore(first.directory).load()).keeps, keeps)
+  await second.restore(await first.backup())
+  assert.deepEqual((await second.load()).keeps, keeps)
+})
 test('media backups include bytes and restore on a different data directory', async t => {
   const first = await fixture(t), second = await fixture(t)
   const media = await first.addMedia(gif)
-  await first.save({ keeps: [{ id: 'test', title: 'GIF', content: '', kind: 'gif', mediaUrl: media.url, createdAt: new Date().toISOString() }] })
+  await first.save({ keeps: [{ id: 'test', title: 'GIF checklist', content: 'Task', richText: [{ text: 'Task', bold: true, color: '#112233', highlight: '#fff3a6' }], color: 'yellow', font: 'Georgia', kind: 'todo', todos: [{ id: 'task', text: 'Task', done: true }], completed: true, pinned: true, tags: ['Recepty', 'Doma'], group: 'Kuchyně', mediaKind: 'gif', mediaUrl: media.url, createdAt: new Date().toISOString() }] })
   const backup = await first.backup()
   await second.restore(backup)
   assert.deepEqual(await second.load(), await first.load())
@@ -76,4 +108,8 @@ test('reject executable or remote content, invalid sessions, and wrong saved typ
   assert.throws(() => validateState({ discover: { order: ['1'], liked: [], swiped: [], index: 10 } }))
   assert.throws(() => validateState({ keeps: [{ id: 'x', title: '', content: '', kind: 'photo', createdAt: 'today', mediaUrl: 'https://remote.test/image.png' }] }))
   assert.equal(inspectMedia(gif), 'gif')
+  const keep = { id: 'test', title: '', content: '', kind: 'note', createdAt: 'today' }
+  for (const metadata of [{ pinned: 'yes' }, { tags: 'tag' }, { tags: [4] }, { group: [] }, { mediaKind: 'exe' }, { color: 'unknown' }, { font: [] }, { richText: [{ text: '', color: 'url(remote)' }] }, { richText: [{ text: '', bold: 'yes' }] }, { richText: [{ text: 'mismatch' }] }]) {
+    assert.throws(() => validateState({ keeps: [{ ...keep, ...metadata }] }))
+  }
 })

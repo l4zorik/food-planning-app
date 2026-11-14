@@ -1,6 +1,6 @@
 {
   "name": "personal-meal-planner-desktop",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "productName": "My Meal Planner Lite",
@@ -8,9 +8,9 @@
   "author": "Personal use",
   "main": "main.cjs",
   "scripts": {
-    "build": "node --check main.cjs && node --check preload.cjs && node --check store.cjs && node --check lite/app.js",
+    "build": "node --check main.cjs && node --check preload.cjs && node --check store.cjs && node --check branding.cjs && node --check startup.cjs && node --check lite/app.js && node --check lite/keep-order.js && node --check lite/keep-actions.js && node --check lite/keep-style.js && node --check lite/keep-drag.js && node --check lite/updates.js",
     "start": "electron .",
-    "pack": "electron-builder --win portable --x64 --publish never"
+    "pack": "electron-builder --win nsis portable --x64 --publish never"
   },
   "devDependencies": {
     "electron": "45.2.3",
@@ -22,8 +22,9 @@
     "asar": true,
     "npmRebuild": false,
     "directories": { "output": "../release" },
-    "files": ["main.cjs", "preload.cjs", "store.cjs", "lite/**/*", "package.json"],
-    "win": { "target": "portable", "signAndEditExecutable": false },
-    "artifactName": "My-Meal-Planner-Lite-${version}-Windows.${ext}"
+    "files": ["main.cjs", "preload.cjs", "store.cjs", "startup.cjs", "branding.cjs", "lite/**/*", "package.json"],
+    "win": { "target": ["nsis", "portable"], "signAndEditExecutable": false },
+    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true, "createStartMenuShortcut": true, "artifactName": "My-Meal-Planner-Lite-Setup-${version}.exe" },
+    "portable": { "artifactName": "My-Meal-Planner-Lite-${version}-Portable.exe" }
   }
 }

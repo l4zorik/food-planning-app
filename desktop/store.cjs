@@ -2,9 +2,6 @@ const fs = require('node:fs/promises')
 const path = require('node:path')
 const { createHash, randomUUID } = require('node:crypto')
 
-const STATE_LIMIT = 4 * 1024 * 1024
-const MEDIA_LIMIT = 100 * 1024 * 1024
-const BACKUP_LIMIT = 180 * 1024 * 1024
 const allowedKeys = new Set(['meals', 'ingredients', 'notes', 'keeps', 'theme', 'discover', 'aiPlans'])
 const mediaPattern = /^[a-f0-9]{64}\.(png|jpg|gif|webp|mp4|webm)$/
 const mimeTypes = { png: 'image/png', jpg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', mp4: 'video/mp4', webm: 'video/webm' }
@@ -12,7 +9,6 @@ const mimeTypes = { png: 'image/png', jpg: 'image/jpeg', gif: 'image/gif', webp:
 function validateState(state) {
   if (!state || typeof state !== 'object' || Array.isArray(state)) throw Error('Invalid saved data.')
   const json = JSON.stringify(state)
-  if (Buffer.byteLength(json) > STATE_LIMIT) throw Error('Saved text data exceeds 4 MB.')
   for (const key of Object.keys(state)) if (!allowedKeys.has(key)) throw Error('Unknown saved data section.')
   for (const key of ['meals', 'ingredients']) {
     if (state[key] !== undefined && (!state[key] || typeof state[key] !== 'object' || Array.isArray(state[key]))) throw Error(`Invalid ${key}.`)
@@ -25,6 +21,18 @@ function validateState(state) {
   for (const keep of state.keeps || []) {
     if (!keep || typeof keep.id !== 'string' || typeof keep.title !== 'string' || typeof keep.content !== 'string' || typeof keep.createdAt !== 'string' || !['note','todo','photo','video','gif'].includes(keep.kind)) throw Error('Invalid keep.')
     if (keep.completed !== undefined && typeof keep.completed !== 'boolean') throw Error('Invalid to-do.')
+    if (keep.pinned !== undefined && typeof keep.pinned !== 'boolean') throw Error('Invalid pin.')
+    if (keep.tags !== undefined && (!Array.isArray(keep.tags) || !keep.tags.every(tag => typeof tag === 'string'))) throw Error('Invalid tags.')
+    if (keep.group !== undefined && typeof keep.group !== 'string') throw Error('Invalid group.')
+    if (keep.mediaKind !== undefined && !['photo', 'gif', 'video'].includes(keep.mediaKind)) throw Error('Invalid media kind.')
+    if (keep.color !== undefined && !['default', 'yellow', 'orange', 'red', 'pink', 'purple', 'blue', 'cyan', 'green', 'gray'].includes(keep.color)) throw Error('Invalid Keep color.')
+    if (keep.font !== undefined && typeof keep.font !== 'string') throw Error('Invalid Keep font.')
+    if (keep.richText !== undefined) {
+      if (!Array.isArray(keep.richText) || !keep.richText.every(run => run && typeof run.text === 'string' &&
+        (run.bold === undefined || typeof run.bold === 'boolean') &&
+        ['color', 'highlight'].every(key => run[key] === undefined || typeof run[key] === 'string' && /^#[a-f0-9]{6}$/i.test(run[key])))) throw Error('Invalid rich text.')
+      if (keep.richText.map(run => run.text).join('') !== keep.content) throw Error('Rich text does not match Keep content.')
+    }
     if (keep.todos !== undefined && (!Array.isArray(keep.todos) || !keep.todos.every(item => item && typeof item.id === 'string' && typeof item.text === 'string' && typeof item.done === 'boolean'))) throw Error('Invalid to-do list.')
     if (keep.mediaUrl !== undefined && (typeof keep.mediaUrl !== 'string' || !/^mealmedia:\/\/local\/[a-f0-9]{64}\.(png|jpg|gif|webp|mp4|webm)$/.test(keep.mediaUrl))) throw Error('Import media into local storage before saving it.')
   }
@@ -47,7 +55,7 @@ function validateState(state) {
 }
 
 function inspectMedia(bytes) {
-  if (!Buffer.isBuffer(bytes) || bytes.length === 0 || bytes.length > MEDIA_LIMIT) throw Error('Media must be between 1 byte and 100 MB.')
+  if (!Buffer.isBuffer(bytes) || bytes.length === 0) throw Error('Media must be a non-empty file.')
   if (bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) return 'png'
   if (bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) return 'jpg'
   if (/^GIF8[79]a$/.test(bytes.subarray(0, 6).toString('ascii'))) return 'gif'
@@ -68,7 +76,6 @@ class DataStore {
   async load() {
     try {
       const raw = await fs.readFile(this.file, 'utf8')
-      if (Buffer.byteLength(raw) > STATE_LIMIT + 1024) throw Error('Saved data is too large.')
       const document = JSON.parse(raw)
       if (document.version !== 1) throw Error('Unsupported data version.')
       return validateState(document.state)
@@ -113,28 +120,21 @@ class DataStore {
     const state = await this.load()
     const names = new Set((state.keeps || []).filter(k => k.mediaUrl).map(k => k.mediaUrl.split('/').pop()))
     const media = []
-    let total = 0
     for (const name of names) {
       if (!mediaPattern.test(name)) throw Error('Invalid attachment name.')
       const bytes = await fs.readFile(path.join(this.mediaDirectory, name))
-      total += bytes.length
-      if (total > MEDIA_LIMIT) throw Error('This backup exceeds the 100 MB attachment limit.')
       media.push({ name, base64: bytes.toString('base64') })
     }
     return JSON.stringify({ format: 'personal-meal-planner', version: 1, exportedAt: new Date().toISOString(), state, media })
   }
   async restore(raw) {
-    if (Buffer.byteLength(raw) > BACKUP_LIMIT) throw Error('Backup is too large.')
     const backup = JSON.parse(raw)
     if (backup.format !== 'personal-meal-planner' || backup.version !== 1 || !Array.isArray(backup.media)) throw Error('Unsupported backup format.')
     const checked = validateState(backup.state)
-    let total = 0
     const media = new Map()
     for (const item of backup.media) {
       if (!item || typeof item.name !== 'string' || !mediaPattern.test(item.name) || typeof item.base64 !== 'string' || media.has(item.name)) throw Error('Invalid backup attachment.')
       const bytes = Buffer.from(item.base64, 'base64')
-      total += bytes.length
-      if (total > MEDIA_LIMIT) throw Error('Backup attachments exceed 100 MB.')
       const expected = `${createHash('sha256').update(bytes).digest('hex')}.${inspectMedia(bytes)}`
       if (expected !== item.name) throw Error('Backup attachment checksum mismatch.')
       media.set(item.name, bytes)
@@ -146,4 +146,9 @@ class DataStore {
   }
 }
 
-module.exports = { DataStore, validateState, inspectMedia, mediaPattern, mimeTypes, MEDIA_LIMIT, BACKUP_LIMIT }
+function backupFilename(now = new Date()) {
+  const date = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-')
+  return `Meal-Planner-backup-${date}.json`
+}
+
+module.exports = { DataStore, validateState, inspectMedia, mediaPattern, mimeTypes, backupFilename }

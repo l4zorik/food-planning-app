@@ -1,0 +1,62 @@
+// Each shipped build carries its own offline update log.
+export const release = {
+  version: '0.3.0', date: '2026-11-13',
+  notes: [
+    { title: 'Keeps · Písmo, zvýraznění a barvy', text: 'Velký editor nabízí tučné písmo, barvu textu, zvýraznění a 20 písem. V nabídce pravého tlačítka najdete barvy karty s černým textem. Volba Původní vrátí vzhled podle motivu. Formátování i barvy zůstávají uložené a přenášejí se v záloze.' },
+    { title: 'Keeps · Rolování při přesouvání', text: 'Při tažení karty můžete rolovat kolečkem myši. Přiblížení k hornímu nebo dolnímu okraji okna nástěnku automaticky posouvá. Escape přesouvání zruší.' },
+    { title: 'Keeps · Akce pravým tlačítkem', text: 'Pravým kliknutím připnete kartu, označíte ji jako hotovou, převedete zápis na checklist nebo přidáte tagy a skupinu. Podržení pravého tlačítka otevře velký editor s automatickým ukládáním. Skupiny lze filtrovat nad nástěnkou.' },
+    { title: 'Keeps · Volná nástěnka', text: 'Všechny karty jsou vidět bez omezení na posledních sedm. Přesuňte je tažením za úchyt ⠿ nebo šipkami na klávesnici; pořadí se automaticky uloží. Texty, přílohy a zálohy nemají pevné aplikační limity velikosti.' },
+    { title: '04 ERP · Prostor pro řízení firmy', text: 'Vedle Keeps & poznámky najdete novou sekci ERP. Připravuje prostor pro budoucí firemní evidenci a AI asistenta.' },
+    { title: 'Záloha s aktuálním datem', text: 'Název zálohy se při každém exportu vytvoří z aktuálního místního data počítače. Dialog navrhne nový název místo názvu předchozí zálohy.' },
+    { title: 'Příjemnější první dojem', text: 'Úvodní obrazovka s logem a průběhem spouštění. Zástupce Start-Lite.vbs otevírá aplikaci bez terminálu.' },
+    { title: 'Vaše značka na prvním místě', text: 'Nastavte název firmy a vlastní logo. Při příštím spuštění vás přivítá vaše značka.' },
+    { title: 'Přehled novinek při každém startu', text: 'Všechny změny najdete tady. K přehledu se kdykoli vrátíte tlačítkem Co je nového.' },
+    { title: 'Lepší kontrola spouštění', text: 'Start čeká na načtení rozhraní. Opakované spuštění přepne do otevřeného okna; chyby mají vlastní dialog a uloženou diagnostiku.' },
+  ],
+}
+
+export async function setupUpdates(api) {
+  const $ = id => document.getElementById(id)
+  const dialog = $('updates-dialog')
+  $('release-version').textContent = release.version
+  $('release-date').dateTime = release.date
+  $('release-date').textContent = new Intl.DateTimeFormat('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(release.date + 'T12:00:00'))
+  for (const [index, note] of release.notes.entries()) {
+    const item = document.createElement('li')
+    const number = document.createElement('span'); number.className = 'release-number'; number.textContent = String(index + 1).padStart(2, '0')
+    const copy = document.createElement('div')
+    const title = document.createElement('h4'); title.textContent = note.title
+    const text = document.createElement('p'); text.textContent = note.text
+    copy.append(title, text); item.append(number, copy); $('release-notes').append(item)
+  }
+  function applyBrand(brand) {
+    $('business-name').value = brand.name
+    $('header-brand-name').textContent = brand.name
+    document.title = brand.name + ' · Meal Planner Lite'
+    for (const id of ['header-brand-mark', 'updates-brand-mark']) {
+      const mark = $(id)
+      mark.textContent = '◒'
+      if (brand.logo) {
+        const image = document.createElement('img'); image.src = brand.logo; image.alt = brand.name
+        image.addEventListener('error', () => { mark.textContent = '◒' }, { once: true })
+        mark.replaceChildren(image)
+      }
+    }
+  }
+  async function saveBrand(chooseLogo) {
+    const buttons = [$('save-business-name'), $('choose-business-logo')]
+    buttons.forEach(button => { button.disabled = true })
+    try {
+      const brand = await api.saveBrand($('business-name').value, chooseLogo)
+      if (brand) { applyBrand(brand); $('brand-feedback').textContent = 'Uloženo. Vaše značka se objeví i při příštím startu.' }
+    } catch (error) { $('brand-feedback').textContent = error.message }
+    finally { buttons.forEach(button => { button.disabled = false }) }
+  }
+  $('save-business-name').addEventListener('click', () => saveBrand(false))
+  $('choose-business-logo').addEventListener('click', () => saveBrand(true))
+  $('open-updates').addEventListener('click', () => { if (!dialog.open) dialog.showModal() })
+  for (const id of ['continue-startup', 'close-updates']) $(id).addEventListener('click', () => dialog.close())
+  try { applyBrand(await api.loadBrand()) }
+  catch { $('brand-feedback').textContent = 'Značku se nepodařilo načíst. Můžete ji nastavit znovu.' }
+  dialog.showModal()
+}
