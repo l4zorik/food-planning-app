@@ -1,7 +1,17 @@
 // Each shipped build carries its own offline update log.
 export const release = {
-  version: '0.3.0', date: '2026-11-13',
+  version: '0.3.0', date: '2026-11-14',
   notes: [
+    { title: '06 Cheats & Lifehacks', text: 'Nová sekce s 20 sloty pro vaše problémy a knihovnou 49 plánovacích workflow. Hledejte podle účelu, problému, oblasti a tagů. Každý postup má pět konkrétních kroků, vlastní odškrtnutí a automatické ukládání.' },
+    { title: 'Problémy propojené tagy', text: 'Výběr životní situace nabídne související workflow. Společné tagy také propojí vaše problémy napříč sloty. Můžete zadat vlastní situaci, upravit její tagy a přidat více postupů do jednoho slotu. Oblíbené fungují i v nových modalech.' },
+    { title: 'Výběrové modaly ve všech pěti slotech', text: 'Výběr problémů, 50 strategií a 15 rutin je dostupný v každém slotu, pro libovolné i vlastní téma. Hlavička ukazuje aktuální slot a problém; každý slot má svůj plán, dny a checklisty.' },
+    { title: 'Oblíbené v modalech', text: 'Pravým kliknutím na problém, strategii nebo rutinu otevřete nabídku Označit jako oblíbené. Karty dostanou hvězdičku a v každém výběru je filtr Oblíbené. Stejnou nabídkou označení odeberete. Oblíbené se ukládají samostatně a přenášejí v záloze.' },
+    { title: 'Porno · Strategie → rutina → týden', text: 'Vyberte z 50 strategií. Druhý modal nabídne 15 předpřipravených rutin a výběr 1–7 dnů v týdnu. Checklisty vybraných dnů se zobrazí vedle sebe a uchovávají odškrtnutí podle data. Ruční poznámky a vlastní kroky zůstávají zachované.' },
+    { title: 'Průběh dne · 100 XP', text: 'Pod rutinou najdete pět bodů: Probuzení, Snídaně, Oběd, Večeře a Spánek. Každý přidá 20 XP, maximálně 100 za den. Vše má vlastní datum a přenáší se v záloze.' },
+    { title: 'Detox · 100 témat v obrázkové mřížce', text: 'Výběr problému otevírá modal s mřížkou 10 × 10, ikonami a 100 lokálními ilustracemi. Témata můžete hledat, filtrovat podle deseti oblastí nebo napsat vlastní. Menší obrazovky mají méně sloupců.' },
+    { title: 'Pět nových designů Detox', text: 'Marihuana · Botanical, Porno · Velvet, Sociální sítě · Signal, Lust a modelky · Muse a Přejídání · Balance. Karty mají vlastní vizuální styl; v nabídce vzhledu můžete vybrat také motiv celé aplikace. Celkem je k dispozici 65 motivů.' },
+    { title: 'Plynulé spuštění po aktualizaci', text: 'Jedna úvodní obrazovka se automaticky zavře před zobrazením připravené aplikace. Hlavní okno čeká na načtení dat i první vykreslení, bez dalšího klikání.' },
+    { title: '05 Management · a) Detox', text: 'Pět slotů pro výběr a označení problémů, strategii a konkrétní krok. Pod každým slotem je samostatný checklist rutiny, který zůstává zachovaný při změně problému i strategie. Vše se ukládá automaticky a přenáší v záloze.' },
     { title: 'Keeps · Písmo, zvýraznění a barvy', text: 'Velký editor nabízí tučné písmo, barvu textu, zvýraznění a 20 písem. V nabídce pravého tlačítka najdete barvy karty s černým textem. Volba Původní vrátí vzhled podle motivu. Formátování i barvy zůstávají uložené a přenášejí se v záloze.' },
     { title: 'Keeps · Rolování při přesouvání', text: 'Při tažení karty můžete rolovat kolečkem myši. Přiblížení k hornímu nebo dolnímu okraji okna nástěnku automaticky posouvá. Escape přesouvání zruší.' },
     { title: 'Keeps · Akce pravým tlačítkem', text: 'Pravým kliknutím připnete kartu, označíte ji jako hotovou, převedete zápis na checklist nebo přidáte tagy a skupinu. Podržení pravého tlačítka otevře velký editor s automatickým ukládáním. Skupiny lze filtrovat nad nástěnkou.' },

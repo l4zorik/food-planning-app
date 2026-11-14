@@ -4,10 +4,14 @@ import { moveKeep } from './keep-order.js'
 import { setupKeepActions } from './keep-actions.js'
 import { setupKeepDrag } from './keep-drag.js'
 import { applyKeepStyle, renderRichText } from './keep-style.js'
+import { setupManagement } from './management.js'
+import { setupLifehacks } from './lifehacks.js'
 
 const api = window.personalDesktop
 const $ = id => document.getElementById(id)
 let state = {}, ready = false, attachment = null, saveTimer, pending = Promise.resolve(), revision = 0
+const management = setupManagement({ getState: () => state, save: queueSave })
+const lifehacks = setupLifehacks({ getState: () => state, save: queueSave })
 const keepActions = setupKeepActions({
   getKeeps: () => state.keeps || [],
   update: (id, replacement) => { state.keeps = (state.keeps || []).map(keep => keep.id === id ? replacement : keep); queueSave(); renderKeeps() },
@@ -44,8 +48,8 @@ function flush() {
 }
 function selectView(view) {
   keepActions.close()
-  for (const panel of ['week','shopping','keeps','erp']) $(panel).hidden = panel !== view
-  document.querySelector('.welcome').hidden = view === 'erp'
+  for (const panel of ['week','shopping','keeps','erp','management','cheats']) $(panel).hidden = panel !== view
+  document.querySelector('.welcome').hidden = ['erp', 'management', 'cheats'].includes(view)
   for (const button of document.querySelectorAll('[data-view]')) button.setAttribute('aria-pressed', String(button.dataset.view === view))
 }
 
@@ -159,6 +163,11 @@ function applyTheme() {
   const theme = resolveTheme(preference, new Date())
   for (const [key, value] of Object.entries(themeVariables(theme))) document.documentElement.style.setProperty(key, value)
   document.documentElement.style.colorScheme = theme.dark ? 'dark' : 'light'
+  document.documentElement.dataset.design = theme.design || ''
+  document.documentElement.style.setProperty('--design-art', theme.image ? `url("${theme.image}")` : 'none')
+  $('theme-design-preview').hidden = !theme.image
+  if (theme.image) $('theme-design-art').src = theme.image
+  $('theme-design-description').textContent = theme.description || ''
   $('active-theme').textContent = `${theme.name}${preference.automatic ? ' · automaticky' : ''}`
   $('theme-mode').value = preference.mode
   $('theme-id').replaceChildren(...themeCatalog[preference.mode].map(item => {
@@ -166,7 +175,7 @@ function applyTheme() {
   }))
   $('theme-id').value = theme.id
   $('theme-auto').checked = preference.automatic
-  $('theme-auto').disabled = preference.mode === 'color'
+  $('theme-auto').disabled = ['color', 'focus'].includes(preference.mode)
 }
 
 $('shopping-form').addEventListener('submit', event => {
@@ -199,7 +208,7 @@ $('import-media').addEventListener('click', async () => {
 })
 $('theme-mode').addEventListener('change', () => {
   const mode = $('theme-mode').value
-  state.theme = { mode, id: themeCatalog[mode][0].id, automatic: mode !== 'color' }
+  state.theme = { mode, id: themeCatalog[mode][0].id, automatic: !['color', 'focus'].includes(mode) }
   applyTheme(); queueSave()
 })
 $('theme-id').addEventListener('change', () => { state.theme = { mode: $('theme-mode').value, id: $('theme-id').value, automatic: false }; applyTheme(); queueSave() })
@@ -215,7 +224,7 @@ $('restore-backup').addEventListener('click', async () => {
 })
 $('save-pdf').addEventListener('click', async () => { try { await flush(); await api.savePdf() } catch (e) { error(e.message) } })
 for (const button of document.querySelectorAll('[data-view]')) button.addEventListener('click', () => selectView(button.dataset.view))
-function renderAll() { renderWeek(); renderShopping(); renderKeeps(); applyTheme() }
+function renderAll() { renderWeek(); renderShopping(); renderKeeps(); management.render(); lifehacks.render(); applyTheme() }
 
 if (!api) { error('Tuto aplikaci spusť pomocí Electronu, ne jako běžnou webovou stránku.'); document.querySelectorAll('button,input,textarea,select').forEach(control => control.disabled = true) }
 else {

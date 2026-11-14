@@ -1,4 +1,4 @@
-const { app } = require('electron')
+const { app, BrowserWindow } = require('electron')
 const fs = require('node:fs/promises')
 const path = require('node:path')
 process.env.MEAL_PLANNER_SMOKE = '1'
@@ -6,12 +6,17 @@ let timeout = setTimeout(() => { process.stderr.write('Desktop smoke timed out\n
 let completed = false
 app.on('before-quit', () => { if (!completed) { process.stderr.write('Desktop exited before smoke completed\n'); app.exit(1) } })
 app.on('browser-window-created', (_event, window) => {
+  const shown = new Promise(resolve => window.once('show', resolve))
   window.webContents.on('render-process-gone', (_event, details) => {
     process.stderr.write(`Renderer failed: ${JSON.stringify(details)}\n`); app.exit(1)
   })
   window.webContents.once('did-finish-load', async () => {
     if (window.webContents.getURL() !== 'mealapp://local/index.html') return
     try {
+      // Startup must finish without a click in either the splash or main window.
+      await shown
+      if (BrowserWindow.getAllWindows().some(other => other !== window)) throw Error('Startup splash remained over the application')
+      if (!window.isVisible()) throw Error('Ready application was not shown')
       const result = await window.webContents.executeJavaScript(`(async () => {
         const wait = async check => { for (let n = 0; n < 100; n++) { if (check()) return; await new Promise(resolve => setTimeout(resolve, 50)); } throw Error('Renderer did not become ready'); };
         await wait(() => document.getElementById('save-status').textContent.includes('Uloženo'));

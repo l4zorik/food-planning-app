@@ -2,7 +2,7 @@ const fs = require('node:fs/promises')
 const path = require('node:path')
 const { createHash, randomUUID } = require('node:crypto')
 
-const allowedKeys = new Set(['meals', 'ingredients', 'notes', 'keeps', 'theme', 'discover', 'aiPlans'])
+const allowedKeys = new Set(['meals', 'ingredients', 'notes', 'keeps', 'theme', 'discover', 'aiPlans', 'management', 'cheats'])
 const mediaPattern = /^[a-f0-9]{64}\.(png|jpg|gif|webp|mp4|webm)$/
 const mimeTypes = { png: 'image/png', jpg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', mp4: 'video/mp4', webm: 'video/webm' }
 
@@ -36,9 +36,45 @@ function validateState(state) {
     if (keep.todos !== undefined && (!Array.isArray(keep.todos) || !keep.todos.every(item => item && typeof item.id === 'string' && typeof item.text === 'string' && typeof item.done === 'boolean'))) throw Error('Invalid to-do list.')
     if (keep.mediaUrl !== undefined && (typeof keep.mediaUrl !== 'string' || !/^mealmedia:\/\/local\/[a-f0-9]{64}\.(png|jpg|gif|webp|mp4|webm)$/.test(keep.mediaUrl))) throw Error('Import media into local storage before saving it.')
   }
+  if (state.management !== undefined) {
+    const management = state.management
+    if (!management || typeof management !== 'object' || Array.isArray(management) || !Array.isArray(management.detox) || management.detox.length !== 5) throw Error('Invalid Management slots.')
+    const record = value => value && typeof value === 'object' && !Array.isArray(value)
+    if (management.favorites !== undefined && (!record(management.favorites) || !Object.entries(management.favorites).every(([kind, ids]) => ['problems', 'strategies', 'routines'].includes(kind) && Array.isArray(ids) && ids.every(id => typeof id === 'string') && new Set(ids).size === ids.length))) throw Error('Invalid modal favorites.')
+    const validDate = key => /^\d{4}-\d{2}-\d{2}$/.test(key) && Number.isFinite(Date.parse(key)) && new Date(key).toISOString().slice(0, 10) === key
+    const datedChecks = value => record(value) && Object.entries(value).every(([date, checks]) => validDate(date) && record(checks) && Object.values(checks).every(done => typeof done === 'boolean'))
+    for (const slot of management.detox) {
+      if (!slot || typeof slot.active !== 'boolean' || typeof slot.problem !== 'string' || typeof slot.strategy !== 'string' || typeof slot.plan !== 'string' || !Array.isArray(slot.routine)) throw Error('Invalid Detox slot.')
+      if (!slot.routine.every(item => item && typeof item.id === 'string' && typeof item.text === 'string' && typeof item.done === 'boolean')) throw Error('Invalid Detox routine.')
+      if (new Set(slot.routine.map(item => item.id)).size !== slot.routine.length) throw Error('Duplicate Detox step.')
+      if (slot.schedule !== undefined) {
+        const s = slot.schedule
+        if (!record(s) || !Array.isArray(s.days) || !s.days.length || s.days.length > 7 || !s.days.every(day => Number.isInteger(day) && day >= 0 && day <= 6) || new Set(s.days).size !== s.days.length) throw Error('Invalid routine days.')
+        if (!Array.isArray(s.templateIds) || !s.templateIds.length || s.templateIds.length > 15 || !s.templateIds.every(id => typeof id === 'string') || new Set(s.templateIds).size !== s.templateIds.length) throw Error('Invalid routine templates.')
+        if (!Array.isArray(s.steps) || !s.steps.length || !s.steps.every(step => step && typeof step.id === 'string' && typeof step.text === 'string' && typeof step.routine === 'string') || new Set(s.steps.map(step => step.id)).size !== s.steps.length || !datedChecks(s.checks)) throw Error('Invalid weekly routine.')
+      }
+      if (slot.dayProgress !== undefined && (!datedChecks(slot.dayProgress) || !Object.values(slot.dayProgress).every(checks => Object.keys(checks).every(key => ['wake', 'breakfast', 'lunch', 'dinner', 'sleep'].includes(key))))) throw Error('Invalid daily progress.')
+    }
+  }
+  if (state.cheats !== undefined) {
+    const cheats = state.cheats
+    const record = value => value && typeof value === 'object' && !Array.isArray(value)
+    const stringList = value => Array.isArray(value) && value.every(text => typeof text === 'string') && new Set(value).size === value.length
+    if (!record(cheats) || !Array.isArray(cheats.slots) || cheats.slots.length !== 20) throw Error('Invalid Lifehacks slots.')
+    if (cheats.favorites !== undefined && (!record(cheats.favorites) || !Object.entries(cheats.favorites).every(([kind, ids]) => ['problems', 'workflows'].includes(kind) && stringList(ids)))) throw Error('Invalid Lifehacks favorites.')
+    for (const slot of cheats.slots) {
+      if (!record(slot) || typeof slot.active !== 'boolean' || typeof slot.notes !== 'string' || !Array.isArray(slot.workflows)) throw Error('Invalid Lifehacks slot.')
+      if (slot.problem !== null && (!record(slot.problem) || !(slot.problem.id === null || typeof slot.problem.id === 'string') || typeof slot.problem.name !== 'string' || !stringList(slot.problem.tags))) throw Error('Invalid Lifehacks problem.')
+      for (const workflow of slot.workflows) {
+        if (!record(workflow) || !['id', 'templateId', 'name', 'purpose'].every(key => typeof workflow[key] === 'string') || !stringList(workflow.tags) || !Array.isArray(workflow.steps) || !workflow.steps.length) throw Error('Invalid Lifehacks workflow.')
+        if (!workflow.steps.every(step => record(step) && typeof step.id === 'string' && typeof step.text === 'string' && typeof step.done === 'boolean') || new Set(workflow.steps.map(step => step.id)).size !== workflow.steps.length) throw Error('Invalid Lifehacks checklist.')
+      }
+      if (new Set(slot.workflows.map(workflow => workflow.id)).size !== slot.workflows.length || new Set(slot.workflows.map(workflow => workflow.templateId)).size !== slot.workflows.length) throw Error('Duplicate Lifehacks workflow.')
+    }
+  }
   if (state.theme !== undefined) {
     const t = state.theme
-    if (!t || !['color','season','month','hour'].includes(t.mode) || typeof t.id !== 'string' || typeof t.automatic !== 'boolean') throw Error('Invalid theme.')
+    if (!t || !['color','season','month','hour','focus'].includes(t.mode) || typeof t.id !== 'string' || typeof t.automatic !== 'boolean') throw Error('Invalid theme.')
   }
   if (state.discover !== undefined) {
     const d = state.discover

@@ -2,27 +2,17 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $runtimeRoot = Join-Path $projectRoot '.runtime'
-$splash = $null
 $liteProcess = $null
 $stderr = $null
 $marker = $null
 $exitCode = 0
 
-function Update-Splash([string]$message) {
-    if ($splash) {
-        $splash.FindName('StartupStatus').Text = $message
-        $splash.Dispatcher.Invoke([Action]{}, [Windows.Threading.DispatcherPriority]::Background)
-    }
-}
+# Electron owns the only splash and closes it before showing the application.
+# A second UI in this hidden PowerShell host can cover the ready window.
+function Write-StartupStatus([string]$message) { Write-Verbose $message }
 
 try {
     New-Item -ItemType Directory -Path $runtimeRoot -Force | Out-Null
-    if (-not $NoSplash) {
-        . (Join-Path $PSScriptRoot 'startup-splash.ps1')
-        $splash = New-StartupSplash -ProjectRoot $projectRoot
-        $splash.Show()
-        Update-Splash 'Připravujeme váš prostor…'
-    }
     # Match the manifest; never silently use an old preview runtime.
     $manifest = Get-Content -LiteralPath (Join-Path $projectRoot 'desktop/package.json') -Raw | ConvertFrom-Json
     $version = $manifest.devDependencies.electron
@@ -34,7 +24,7 @@ try {
         $electronBinary = $installed
     } else {
         if (-not (Test-Path -LiteralPath $cached)) {
-            Update-Splash 'Připravujeme první spuštění…'
+            Write-StartupStatus 'Připravujeme první spuštění…'
             $archive = Get-ChildItem -LiteralPath (Join-Path $env:LOCALAPPDATA 'electron/Cache') -Recurse -File -Filter "electron-v$version-win32-x64.zip" -ErrorAction SilentlyContinue | Select-Object -First 1
             if (-not $archive) { throw "Chybí Electron $version. Pro první instalaci spusťte scripts/build-lite.ps1 s připojením k internetu." }
             # Integrity of a known local archive, not a publisher signature.
@@ -62,20 +52,23 @@ try {
     $marker = Join-Path $runtimeRoot "startup-$launchId.json"
     $stderr = Join-Path $runtimeRoot "startup-$launchId-stderr.log"
     $stdout = Join-Path $runtimeRoot "startup-$launchId-stdout.log"
-    Update-Splash 'Otevíráme aplikaci…'
+    Write-StartupStatus 'Otevíráme aplikaci…'
     $nodeMode = $env:ELECTRON_RUN_AS_NODE
     $nodeOptions = $env:NODE_OPTIONS
     try {
         Remove-Item Env:ELECTRON_RUN_AS_NODE -ErrorAction SilentlyContinue
         Remove-Item Env:NODE_OPTIONS -ErrorAction SilentlyContinue
-        $liteProcess = Start-Process -FilePath $electronBinary -ArgumentList ('"' + (Join-Path $projectRoot 'desktop') + '" --meal-startup-id=' + $launchId) -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru -RedirectStandardError $stderr -RedirectStandardOutput $stdout
+        # This is the user's foreground GUI. Only the VBS/PowerShell host is hidden.
+        # SW_HIDE can override the GUI's first ShowWindow call on Windows:
+        # https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-showwindow
+        $liteProcess = Start-Process -FilePath $electronBinary -ArgumentList ('"' + (Join-Path $projectRoot 'desktop') + '" --meal-startup-id=' + $launchId) -WorkingDirectory $projectRoot -WindowStyle Normal -PassThru -RedirectStandardError $stderr -RedirectStandardOutput $stdout
     } finally {
         $env:ELECTRON_RUN_AS_NODE = $nodeMode
         $env:NODE_OPTIONS = $nodeOptions
     }
     $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
     while ([DateTime]::UtcNow -lt $deadline) {
-        Update-Splash 'Za okamžik můžete začít.'
+        Write-StartupStatus 'Za okamžik můžete začít.'
         if (Test-Path -LiteralPath $marker) {
             $result = Get-Content -LiteralPath $marker -Raw -Encoding UTF8 | ConvertFrom-Json
             if ($result.status -in @('ready', 'focused')) { break }
@@ -86,7 +79,7 @@ try {
         # Give the primary time to acknowledge focusing its existing window.
         if ($liteProcess.HasExited) {
             for ($ack = 0; $ack -lt 20 -and -not (Test-Path -LiteralPath $marker); $ack++) {
-                Update-Splash 'Přepínáme do aplikace…'
+                Write-StartupStatus 'Přepínáme do aplikace…'
                 Start-Sleep -Milliseconds 100
             }
             if (Test-Path -LiteralPath $marker) { continue }
@@ -108,11 +101,9 @@ try {
     try { @([DateTime]::Now.ToString('s'), $detail, $_.ScriptStackTrace, $diagnostic) | Set-Content -LiteralPath $failure -Encoding UTF8 } catch { $failure = $null }
     if (-not $NoSplash) {
         Add-Type -AssemblyName PresentationFramework
-        if ($splash) { $splash.Close(); $splash = $null }
         [Windows.MessageBox]::Show("$detail`n`nPodrobnosti: $failure", 'Aplikaci se nepodařilo otevřít', 'OK', 'Error') | Out-Null
     } else { Write-Error -Message "$detail`nPodrobnosti: $failure" -ErrorAction Continue }
 } finally {
-    if ($splash) { $splash.Close() }
     if ($marker -and (Test-Path -LiteralPath $marker)) { Remove-Item -LiteralPath $marker -ErrorAction SilentlyContinue }
 }
 exit $exitCode

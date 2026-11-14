@@ -3,8 +3,40 @@ const assert = require('node:assert/strict')
 const fs = require('node:fs/promises')
 const path = require('node:path')
 const os = require('node:os')
+const { EventEmitter } = require('node:events')
 const { Branding } = require('../desktop/branding.cjs')
-const { startupId, reportStartup } = require('../desktop/startup.cjs')
+const { startupId, reportStartup, prepareWindow } = require('../desktop/startup.cjs')
+
+for (const order of ['data-first', 'paint-first']) {
+  test(`startup waits for data and paint, removes splash before focus (${order})`, () => {
+    const calls = [], window = new EventEmitter()
+    window.isDestroyed = () => false
+    window.show = () => calls.push('show')
+    window.focus = () => calls.push('focus')
+    const splash = { isDestroyed: () => false, destroy: () => calls.push('remove-splash') }
+    const presentation = prepareWindow(window, { getSplash: () => splash, onShown: () => calls.push('acknowledge') })
+    if (order === 'data-first') presentation.ready()
+    else window.emit('ready-to-show')
+    assert.deepEqual(calls, [])
+    if (order === 'data-first') window.emit('ready-to-show')
+    else presentation.ready()
+    assert.deepEqual(calls, ['remove-splash', 'show', 'focus', 'acknowledge'])
+    presentation.ready(); window.emit('ready-to-show')
+    assert.equal(calls.length, 4)
+  })
+}
+
+test('startup handles an absent splash and never reveals a destroyed main window', () => {
+  for (const destroyed of [false, true]) {
+    const window = new EventEmitter(), calls = []
+    window.isDestroyed = () => destroyed
+    window.show = () => calls.push('show')
+    window.focus = () => calls.push('focus')
+    const presentation = prepareWindow(window, { getSplash: () => null, onShown: () => calls.push('ready') })
+    window.emit('ready-to-show'); presentation.ready()
+    assert.deepEqual(calls, destroyed ? [] : ['show', 'focus', 'ready'])
+  }
+})
 
 test('startup acknowledgments cannot escape their directory and are isolated per invocation', async t => {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'meal-startup-'))

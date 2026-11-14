@@ -8,7 +8,7 @@
   "author": "Personal use",
   "main": "main.cjs",
   "scripts": {
-    "build": "node --check main.cjs && node --check preload.cjs && node --check store.cjs && node --check branding.cjs && node --check startup.cjs && node --check lite/app.js && node --check lite/keep-order.js && node --check lite/keep-actions.js && node --check lite/keep-style.js && node --check lite/keep-drag.js && node --check lite/updates.js",
+    "build": "node --check main.cjs && node --check preload.cjs && node --check store.cjs && node --check branding.cjs && node --check startup.cjs && node --check lite/app.js && node --check lite/keep-order.js && node --check lite/keep-actions.js && node --check lite/keep-style.js && node --check lite/keep-drag.js && node --check lite/updates.js && node --check lite/management.js && node --check lite/problem-catalog.js && node --check lite/problem-picker.js && node --check lite/focus-designs.js && node --check lite/themes.js && node --check lite/strategy-catalog.js && node --check lite/strategy-picker.js && node --check lite/routine-model.js && node --check lite/routine-board.js && node --check lite/modal-favorites.js && node --check lite/lifehacks-catalog.js && node --check lite/lifehacks.js",
     "start": "electron .",
     "pack": "electron-builder --win nsis portable --x64 --publish never"
   },

@@ -1,3 +1,5 @@
+import { focusDesigns } from './focus-designs.js'
+
 function palette(id, name, hue, dark = false) {
     return { id, name, hue, dark };
 }
@@ -30,7 +32,7 @@ const hourHues = [230, 238, 246, 254, 218, 205, 25, 32, 65, 135, 165, 200,
     45, 38, 55, 185, 35, 28, 15, 340, 275, 255, 245, 235];
 export const hourThemes = hourNames.map((name, hour) => palette(`hour-${hour}`, `${String(hour).padStart(2, '0')}:00 · ${name}`, hourHues[hour], hour < 5 || hour >= 20));
 export const themeCatalog = {
-    color: colorThemes, season: seasonThemes, month: monthThemes, hour: hourThemes,
+    color: colorThemes, season: seasonThemes, month: monthThemes, hour: hourThemes, focus: focusDesigns,
 };
 export const defaultPreference = { mode: 'hour', id: 'hour-12', automatic: true };
 export const themeStorageKey = 'meal-planner-theme-v1';
@@ -45,7 +47,7 @@ export function readPreference(value) {
         const mode = p.mode;
         if (!themeCatalog[mode].some(t => t.id === p.id) || typeof p.automatic !== 'boolean')
             return defaultPreference;
-        return { mode, id: p.id, automatic: mode !== 'color' && p.automatic };
+        return { mode, id: p.id, automatic: !['color', 'focus'].includes(mode) && p.automatic };
     }
     catch {
         return defaultPreference;

@@ -34,6 +34,34 @@ async function fixture(t) {
 }
 const gif = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64')
 
+test('five Detox slots and independent routines survive restart, backup and restore', async t => {
+  const first = await fixture(t), second = await fixture(t)
+  const state = { management: { detox: Array.from({ length: 5 }, (_, index) => ({
+    active: index === 0, problem: `Problém ${index}`, strategy: 'Vlastní strategie', plan: 'Můj krok',
+    routine: [{ id: 'step', text: 'Telefon mimo stůl', done: true }],
+  })) } }
+  await first.save(state)
+  state.management.detox[0].problem = 'Jiný problém'
+  state.management.detox[0].strategy = 'Omezit čas'
+  await first.save(state)
+  assert.deepEqual(await new DataStore(first.directory).load(), state)
+  await second.restore(await first.backup())
+  assert.deepEqual(await second.load(), state)
+  assert.equal((await second.load()).management.detox[0].routine[0].done, true)
+})
+
+test('invalid Management data is rejected while older backups remain valid', () => {
+  assert.doesNotThrow(() => validateState({ meals: { Monday: 'Pasta' } }))
+  const empty = () => ({ management: { detox: Array.from({ length: 5 }, () => ({ active: false, problem: '', strategy: '', plan: '', routine: [] })) } })
+  assert.doesNotThrow(() => validateState(empty()))
+  for (const change of [
+    state => state.management.detox.pop(),
+    state => { state.management.detox[0].active = 'yes' },
+    state => { state.management.detox[0].strategy = 42 },
+    state => { state.management.detox[0].routine = [{ id: 'x', text: 'Krok', done: 'yes' }] },
+  ]) { const state = empty(); change(state); assert.throws(() => validateState(state), /Invalid/) }
+})
+
 test('state survives restarting the store, with the preceding version retained', async t => {
   const store = await fixture(t)
   assert.deepEqual(await store.load(), {})

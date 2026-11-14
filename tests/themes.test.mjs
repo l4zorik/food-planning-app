@@ -1,11 +1,16 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { themeCatalog, defaultPreference, readPreference, resolveTheme, themeVariables } from '../lib/themes.ts'
+import { themeCatalog as desktopCatalog, readPreference as readDesktopPreference, resolveTheme as resolveDesktopTheme, themeVariables as desktopVariables } from '../desktop/lite/themes.js'
+import { validateState, DataStore } from '../desktop/store.cjs'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
-test('60 unique themes and readable foreground/background combinations', () => {
-  const themes = Object.values(themeCatalog).flat()
+test('60 base themes plus five desktop designs have readable foreground/background combinations', () => {
+  const themes = [...Object.values(themeCatalog).flat(), ...desktopCatalog.focus]
   assert.deepEqual(Object.values(themeCatalog).map(group => group.length), [20, 4, 12, 24])
-  assert.equal(new Set(themes.map(theme => theme.id)).size, 60)
+  assert.equal(new Set(themes.map(theme => theme.id)).size, 65)
   const luminance = color => {
     const [h, s, l] = color.match(/[\d.]+/g).map(Number)
     const a = s / 100 * Math.min(l / 100, 1 - l / 100)
@@ -22,6 +27,27 @@ test('60 unique themes and readable foreground/background combinations', () => {
       const a = luminance(vars[fg]), b = luminance(vars[bg])
       assert.ok((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05) >= 4.5, `${theme.id}: ${fg}`)
     }
+  }
+})
+
+test('all five Detox themes persist, disable automatic switching and restore with backups', async t => {
+  const firstRoot = await mkdtemp(join(tmpdir(), 'detox-theme-'))
+  const secondRoot = await mkdtemp(join(tmpdir(), 'detox-theme-'))
+  t.after(async () => { await rm(firstRoot, { recursive: true, force: true }); await rm(secondRoot, { recursive: true, force: true }) })
+  const first = new DataStore(firstRoot), second = new DataStore(secondRoot)
+  await first.init(); await second.init()
+  assert.equal(Object.values(desktopCatalog).flat().length, 65)
+  for (const theme of desktopCatalog.focus) {
+    const preference = { mode: 'focus', id: theme.id, automatic: false }
+    assert.deepEqual(readDesktopPreference(JSON.stringify({ ...preference, automatic: true })), preference)
+    assert.equal(resolveDesktopTheme(preference, new Date(2026, 1, 1, 0)).id, theme.id)
+    assert.equal(resolveDesktopTheme(preference, new Date(2026, 7, 1, 18)).id, theme.id)
+    assert.ok(theme.image && theme.description && theme.design)
+    assert.deepEqual(desktopVariables(theme), themeVariables(theme))
+    validateState({ theme: preference })
+    await first.save({ theme: preference })
+    await second.restore(await first.backup())
+    assert.deepEqual((await second.load()).theme, preference)
   }
 })
 

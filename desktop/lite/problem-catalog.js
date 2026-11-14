@@ -1,0 +1,142 @@
+// A curated selection, not a statistical ranking or a diagnostic checklist.
+export const problemGroups = [
+  { id: 'habits', name: 'Návyky', icon: '↻', color: '#a9674d', background: '#f8e9df', entries: [
+    ['Porno', '🔒', 'browser-lock', 'Pornografie a její místo v mém životě.'],
+    ['Drogy', '💊', 'capsule', 'Užívání drog, které chci řešit.'],
+    ['Alkohol', '🍷', 'bottle', 'Pití alkoholu a ztráta kontroly.'],
+    ['Nikotin a vaping', '🚬', 'vape', 'Cigarety, nikotin nebo elektronické cigarety.'],
+    ['Hazard a sázení', '🎲', 'dice', 'Sázky, automaty a hraní o peníze.'],
+    ['Počítačové hry', '🎮', 'gamepad', 'Hraní, které vytlačuje jiné věci.'],
+    ['Sociální sítě', '💬', 'social', 'Čas a pozornost na sociálních sítích.'],
+    ['Marihuana', '🌿', 'cannabis', 'Užívání konopí, které chci řešit.'],
+    ['Lust a modelky', '✦', 'fashion', 'Touha, modelky a obsah, který mi bere pozornost.'],
+    ['Přejídání', '🍲', 'bowl', 'Jídlo nad rámec toho, co potřebuji.'],
+  ] },
+  { id: 'digital', name: 'Digitální klid', icon: '◫', color: '#526f99', background: '#e8eef9', entries: [
+    ['Telefon v ruce', '📱', 'phone', 'Telefon kontroluji častěji, než chci.'],
+    ['Neustálé notifikace', '🔔', 'bell', 'Upozornění mi přerušují den.'],
+    ['Nekonečné prohlížení', '🌐', 'browser', 'Bez cíle přecházím mezi stránkami.'],
+    ['Doomscrolling', '📰', 'news', 'Zahlcení negativními zprávami.'],
+    ['Digitální multitasking', '🪟', 'windows', 'Mnoho oken, málo dokončených věcí.'],
+    ['Přeplněný e-mail', '📨', 'mail', 'Zprávy a schránka bez konce.'],
+    ['Digitální nepořádek', '🗂️', 'folder', 'Soubory, fotky a záložky bez systému.'],
+    ['Obrazovka před spaním', '🌙', 'moon-phone', 'Večerní čas u obrazovky.'],
+    ['Telefon hned po probuzení', '🌅', 'sun-phone', 'Ráno začínám telefonem.'],
+    ['Srovnávání na sítích', '🪞', 'compare', 'Cizí životy ovlivňují můj pohled na sebe.'],
+  ] },
+  { id: 'emotions', name: 'Mysl a emoce', icon: '☁', color: '#8a698f', background: '#f0e7f3', entries: [
+    ['Příliš mnoho stresu', '🌪️', 'storm', 'Dlouhodobé napětí a tlak.'],
+    ['Pocity úzkosti', '☁️', 'cloud', 'Obavy a neklid, které mě omezují.'],
+    ['Strach z budoucnosti', '🔮', 'horizon', 'Nejistota z toho, co přijde.'],
+    ['Frustrace', '🧩', 'puzzle', 'Věci nejdou tak, jak potřebuji.'],
+    ['Výbuchy vzteku', '🔥', 'flame', 'Silné reakce, kterých pak lituji.'],
+    ['Pocity viny', '⚖️', 'balance', 'Vyčítám si věci z minulosti.'],
+    ['Stud', '🎭', 'mask', 'Obavy ukázat, co prožívám.'],
+    ['Perfekcionismus', '💎', 'diamond', 'Nic není dost dobré ani hotové.'],
+    ['Přemílání myšlenek', '🌀', 'spiral', 'Myšlenky se vracejí ve stejném kruhu.'],
+    ['Rozhodovací paralýza', '🔀', 'signpost', 'Příliš mnoho možností mě zastaví.'],
+  ] },
+  { id: 'direction', name: 'Směr a smysl', icon: '⌁', color: '#54816f', background: '#e6f0e9', entries: [
+    ['Ztracenost', '🧭', 'compass', 'Nevím, kde jsem a kam dál.'],
+    ['Chybějící smysl', '✨', 'spark', 'Chybí mi pocit, že věci mají význam.'],
+    ['Nejasné cíle', '🎯', 'target', 'Nevím, čeho chci dosáhnout.'],
+    ['Nerozhodnost', '🛤️', 'fork', 'Je těžké vybrat si další cestu.'],
+    ['Nejasné hodnoty', '💠', 'gem', 'Nevím, co je pro mě skutečně důležité.'],
+    ['Ztráta nadšení', '🕯️', 'candle', 'Věci, na které jsem se těšil, zevšedněly.'],
+    ['Pocit stagnace', '⚓', 'anchor', 'Mám pocit, že stojím na místě.'],
+    ['Strach ze změny', '🚪', 'door', 'Nové začátky mě znejisťují.'],
+    ['Chaos v životě', '🧶', 'yarn', 'Příliš mnoho věcí bez jasného směru.'],
+    ['Chybějící vize', '🔭', 'telescope', 'Nevidím obraz života, který chci.'],
+  ] },
+  { id: 'self', name: 'Vztah k sobě', icon: '♡', color: '#a8667b', background: '#f8e7ed', entries: [
+    ['Nízké sebevědomí', '🌱', 'sprout', 'Pochybuji o vlastní hodnotě.'],
+    ['Silný vnitřní kritik', '📣', 'megaphone', 'Mluvím k sobě příliš tvrdě.'],
+    ['Zanedbávání sebe', '🪴', 'plant', 'Moje potřeby zůstávají poslední.'],
+    ['Slabé osobní hranice', '🛡️', 'shield', 'Je těžké chránit si vlastní prostor.'],
+    ['Snaha vyhovět všem', '🤝', 'hands', 'Souhlasím na úkor vlastních potřeb.'],
+    ['Nedůvěra v sebe', '🪁', 'kite', 'Nevěřím, že to dokážu.'],
+    ['Strach ze selhání', '🪂', 'parachute', 'Obava z chyby mi brání začít.'],
+    ['Strach z úspěchu', '🏔️', 'mountain', 'Změny spojené s úspěchem mě brzdí.'],
+    ['Nespokojenost se vzhledem', '🪞', 'mirror', 'Je těžké přijmout vlastní vzhled.'],
+    ['Potřeba uznání', '🏅', 'medal', 'Příliš závisím na hodnocení druhých.'],
+  ] },
+  { id: 'relationships', name: 'Vztahy', icon: '∞', color: '#b47b45', background: '#fbefdb', entries: [
+    ['Osamělost', '🏝️', 'island', 'Chybí mi blízkost a propojení s lidmi.'],
+    ['Časté konflikty', '⚡', 'lightning', 'Rozhovory se mění v hádky.'],
+    ['Partnerské potíže', '💞', 'hearts', 'Ve vztahu se necítím dobře.'],
+    ['Napětí v rodině', '🏠', 'house', 'Rodinné vztahy mi berou klid.'],
+    ['Rozchod a loučení', '💔', 'broken-heart', 'Vyrovnávám se s koncem vztahu.'],
+    ['Nedůvěra k lidem', '🔐', 'lock', 'Je pro mě těžké někomu důvěřovat.'],
+    ['Žárlivost', '👀', 'eyes', 'Obavy o vztah mi zabírají mnoho prostoru.'],
+    ['Strach z odmítnutí', '💌', 'letter', 'Bojím se oslovit lidi a být odmítnut.'],
+    ['Obtížná komunikace', '🗨️', 'bubbles', 'Nedaří se mi říct, co potřebuji.'],
+    ['Neumím si říct o pomoc', '🛟', 'lifebuoy', 'Snažím se zvládnout všechno sám.'],
+  ] },
+  { id: 'work', name: 'Práce a čas', icon: '◷', color: '#4e8492', background: '#e4f0f2', entries: [
+    ['Prokrastinace', '⏳', 'hourglass', 'Odkládám věci, na kterých mi záleží.'],
+    ['Roztěkanost', '🦋', 'butterfly', 'Pozornost přeskakuje z věci na věc.'],
+    ['Chybějící motivace', '🔋', 'battery', 'Je těžké se pustit do práce.'],
+    ['Přepracování', '💼', 'briefcase', 'Práce zabírá příliš velkou část života.'],
+    ['Pracovní vyčerpání', '🪫', 'empty-battery', 'Práce mě dlouhodobě vyčerpává.'],
+    ['Nejasné priority', '📌', 'pin', 'Nevím, co má přijít na řadu první.'],
+    ['Špatná organizace', '📋', 'clipboard', 'Úkoly nemají přehledné místo.'],
+    ['Nestíhání a zpoždění', '⏰', 'clock', 'Čas mi utíká mezi prsty.'],
+    ['Nedokončené projekty', '🚧', 'blocks', 'Začínám mnoho věcí a málo dokončím.'],
+    ['Neumím říct ne', '✋', 'stop', 'Přijímám více, než mám kapacitu zvládnout.'],
+  ] },
+  { id: 'money', name: 'Peníze', icon: '◇', color: '#7d8650', background: '#eef1df', entries: [
+    ['Nedostatečné finance', '👛', 'wallet', 'Peníze nestačí na moje potřeby.'],
+    ['Dluhy', '🧾', 'receipt', 'Závazky a splátky mě zatěžují.'],
+    ['Chybějící rezerva', '🐖', 'piggy', 'Nemám odloženo na nečekané výdaje.'],
+    ['Impulzivní utrácení', '💳', 'card', 'Utrácím bez promyšlení.'],
+    ['Nezaplacené účty', '📑', 'bills', 'Platby a termíny se mi hromadí.'],
+    ['Nepřehledný rozpočet', '🧮', 'calculator', 'Nevím přesně, kam moje peníze jdou.'],
+    ['Strach z peněz', '🪙', 'coin', 'Peníze jsou pro mě zdrojem obav.'],
+    ['Nestabilní příjem', '📉', 'chart', 'Nevím, kolik přijde příští měsíc.'],
+    ['Obtížné hovory o penězích', '💬', 'money-talk', 'O financích se mi těžko mluví.'],
+    ['Tlak na životní úroveň', '👜', 'shopping', 'Utrácím, abych držel krok s okolím.'],
+  ] },
+  { id: 'learning', name: 'Vzdělání a růst', icon: '▤', color: '#6e71a1', background: '#ecebfa', entries: [
+    ['Nedostatečné vzdělání', '🎓', 'graduation', 'Chybí mi vzdělání pro to, co chci dělat.'],
+    ['Potíže s učením', '📖', 'book', 'Je těžké osvojovat si nové věci.'],
+    ['Málo času na rozvoj', '📚', 'books', 'Vzdělávání stále odsouvám.'],
+    ['Cizí jazyky', '🌍', 'globe', 'Jazyková bariéra mě omezuje.'],
+    ['Digitální dovednosti', '💻', 'laptop', 'Chybí mi jistota při práci s technologiemi.'],
+    ['Chybějící kvalifikace', '📜', 'certificate', 'Potřebuji nové dovednosti nebo osvědčení.'],
+    ['Teorie bez praxe', '🛠️', 'tools', 'Naučené věci se nedaří použít.'],
+    ['Chybějící zpětná vazba', '📝', 'feedback', 'Nevím, v čem a jak se posouvám.'],
+    ['Informační přetížení', '📡', 'antenna', 'Příliš mnoho informací a málo prostoru.'],
+    ['Orientace v informacích', '🔎', 'magnifier', 'Je těžké rozlišit důvěryhodné informace.'],
+  ] },
+  { id: 'everyday', name: 'Tělo a každodennost', icon: '☀', color: '#b18450', background: '#f6eddf', entries: [
+    ['Nedostatek spánku', '🛏️', 'bed', 'Nespím tolik, kolik potřebuji.'],
+    ['Nepravidelný režim', '🗓️', 'calendar', 'Moje dny nemají stabilní rytmus.'],
+    ['Málo energie', '☀️', 'sun', 'Na běžné věci mi chybí síla.'],
+    ['Nedostatek pohybu', '👟', 'shoe', 'V mém dni chybí pohyb.'],
+    ['Nepravidelné jídlo', '🍽️', 'plate', 'Na jídlo nemám pravidelný čas.'],
+    ['Zapomínám pít', '💧', 'water', 'Přes den zapomínám na pití.'],
+    ['Dlouhé sezení', '🪑', 'chair', 'Trávím mnoho času v jedné poloze.'],
+    ['Nepořádek doma', '🧺', 'basket', 'Prostředí kolem mě mi bere klid.'],
+    ['Odkládání domácích úkolů', '🧹', 'broom', 'Běžné povinnosti se mi hromadí.'],
+    ['Málo odpočinku', '🍃', 'leaf', 'V mém životě chybí prostor vypnout.'],
+  ] },
+]
+
+export const problemCatalog = problemGroups.flatMap((group, groupIndex) => group.entries.map(([name, icon, artwork, description], index) => {
+  const id = String(groupIndex * 10 + index + 1).padStart(3, '0')
+  const designs = {
+    'Porno': { design: 'velvet', color: '#976d9d', background: '#f0e5f3' },
+    'Marihuana': { design: 'botanical', color: '#38775c', background: '#e2eee3' },
+    'Sociální sítě': { design: 'signal', color: '#4167a0', background: '#e3edfc' },
+    'Lust a modelky': { design: 'muse', color: '#a9687e', background: '#f7e4ec' },
+    'Přejídání': { design: 'balance', color: '#a56f41', background: '#f8ebd8' },
+  }
+  return { id, name, icon, artwork, description, group: group.id, category: group.name, color: group.color, background: group.background, ...designs[name], image: `./assets/problems/${id}.svg` }
+}))
+
+function normalizeSearch(value) { return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('cs').trim() }
+
+export function filterProblems(query = '', group = '') {
+  const terms = normalizeSearch(query).split(/\s+/).filter(Boolean)
+  return problemCatalog.filter(problem => (!group || problem.group === group) && terms.every(term => normalizeSearch(`${problem.name} ${problem.category} ${problem.description}`).includes(term)))
+}

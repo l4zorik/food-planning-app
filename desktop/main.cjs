@@ -4,7 +4,7 @@ const { createReadStream } = require('node:fs')
 const { Readable } = require('node:stream')
 const path = require('node:path')
 const { DataStore, mediaPattern, mimeTypes, backupFilename } = require('./store.cjs')
-const { startupId, reportStartup } = require('./startup.cjs')
+const { startupId, reportStartup, prepareWindow } = require('./startup.cjs')
 const { Branding } = require('./branding.cjs')
 const startupDirectory = path.resolve(__dirname, '../.runtime')
 const pendingStarts = new Set([startupId(process.argv)].filter(Boolean))
@@ -30,7 +30,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'mealmedia', privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true } },
 ])
 const csp = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' mealmedia: data:; media-src mealmedia:; connect-src 'self'; font-src 'self' data:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'"
-let window, splashWindow, store, branding, closing = false, closeTimer, startupTimer
+let window, splashWindow, presentation, store, branding, closing = false, closeTimer, startupTimer
 function trusted(event) {
   if (!window || event.sender !== window.webContents || event.senderFrame !== window.webContents.mainFrame || !/^mealapp:\/\/local\/(index\.html)?$/.test(event.senderFrame.url)) throw Error('Untrusted request.')
 }
@@ -79,7 +79,12 @@ function createWindow() {
     width: 1250, height: 850, minWidth: 560, minHeight: 600, show: false,
     autoHideMenuBar: true,
     title: 'My Meal Planner Lite', backgroundColor: '#f8f7f4',
+    paintWhenInitiallyHidden: true,
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, devTools: !app.isPackaged },
+  })
+  presentation = prepareWindow(window, {
+    getSplash: () => splashWindow,
+    onShown: () => { rendererReady = true; clearTimeout(startupTimer); reportAll('ready') },
   })
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
   window.webContents.on('will-navigate', event => event.preventDefault())
@@ -157,11 +162,7 @@ else {
     })
     handle('data:load', async () => ({ state: await store.load(), directory: store.directory }))
     handle('app:ready', () => {
-      if (rendererReady) return
-      rendererReady = true; clearTimeout(startupTimer)
-      window.show(); window.focus()
-      if (splashWindow && !splashWindow.isDestroyed()) splashWindow.close()
-      reportAll('ready')
+      presentation.ready()
     })
     handle('branding:load', () => branding.public())
     handle('branding:save', async (name, chooseLogo) => {
@@ -212,11 +213,12 @@ else {
       return true
     })
     handle('app:close', async () => { await store.queue; closing = true; clearTimeout(closeTimer); window.close() })
-    if (!startupId(process.argv)) {
-      splashWindow = new BrowserWindow({ width: 560, height: 420, frame: false, resizable: false, show: false, backgroundColor: '#f6f7f0', title: 'Meal Planner · Spouštění', webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true } })
+    {
+      // One splash owned by Electron; the PowerShell launcher creates no window.
+      splashWindow = new BrowserWindow({ width: 560, height: 420, frame: false, resizable: false, show: false, focusable: false, skipTaskbar: true, backgroundColor: '#f6f7f0', title: 'Meal Planner · Spouštění', webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true } })
       splashWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
       splashWindow.webContents.on('will-navigate', event => event.preventDefault())
-      splashWindow.once('ready-to-show', () => { if (!rendererReady) splashWindow.show() })
+      splashWindow.once('ready-to-show', () => { if (!rendererReady && !splashWindow.isDestroyed()) splashWindow.showInactive() })
       splashWindow.loadURL('mealapp://local/startup.html')
     }
     createWindow()

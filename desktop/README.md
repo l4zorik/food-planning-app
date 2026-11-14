@@ -25,7 +25,7 @@ Při každém startu se otevře **Co je nového**. Sekce **Vaše firma, vaše lo
 - Keeps: textové zápisky, úkoly po jednotlivých řádcích, fotky, GIFy a videa.
 - Karty lze přerovnávat tažením za úchyt ⠿ nebo šipkami / Home / End na úchytu; pořadí se automaticky ukládá a přenáší v záloze. Během tažení funguje kolečko myši i automatické posouvání u horního a dolního okraje. Escape tažení zruší.
 - Všechny Keeps jsou vidět automaticky; nástěnka přidává další řádky bez limitu počtu karet a ukazuje celkový počet. Počet karet, délka názvu a textu, velikost příloh ani záloh nemají pevný aplikační limit. Praktickou hranicí je dostupná paměť a místo na disku.
-- 20 barevných, 4 sezónní, 12 měsíčních a 24 hodinových motivů, včetně automatického přepínání podle místního času; sezóny platí pro severní polokouli.
+- 20 barevných, 4 sezónní, 12 měsíčních, 24 hodinových a 5 motivů Detox, včetně automatického přepínání podle místního času; sezóny platí pro severní polokouli.
 - Automatické ukládání a kontrola dokončení zápisu při zavření.
 - Export/obnova přenosné zálohy včetně médií a uložení aktuální sekce do A4 PDF.
 
@@ -60,3 +60,25 @@ node --experimental-strip-types --test tests/themes.test.mjs tests/desktop-store
 Renderer má zapnutý sandbox, context isolation a webSecurity, bez Node integration. IPC ověřuje odesílatele; preload nabízí pouze konkrétní operace nad daty a souborové dialogy. CSP a síťový filtr zakazují externí obsah, nová okna i oprávnění. Osobní data jsou ignorována Gitem.
 
 Reference: [Electron Security](https://www.electronjs.org/docs/latest/tutorial/security), [Electron Protocol](https://www.electronjs.org/docs/latest/api/protocol), [oficiální vydání](https://releases.electronjs.org/releases/stable).
+
+## Management · Detox
+
+V páté sekci vyberte problém pro jeden z pěti slotů. Otevře se modal se 100 tématy v mřížce 10 × 10, s hledáním, filtry, ikonami a vlastními offline SVG ilustracemi. Na menším displeji se počet sloupců přizpůsobí. Vlastní problém lze napsat dole v modalu. Změna tématu ponechává strategii, konkrétní plán i rutinu.
+
+Marihuana, porno, sociální sítě, lust/modelky a přejídání mají vlastní designy karet. V kolekci **5 motivů Detox** můžete navíc nastavit odpovídající vzhled celé aplikace.
+
+### Všech pět slotů · Strategie, rutiny a denní postup
+
+V každém z pěti slotů otevřete modal strategií a vyberte jednu z 50 možností. Výběry fungují pro libovolný problém i vlastní téma; hlavička modalu ukazuje slot a jeho problém. Navazující modal nabízí 15 rutin, výběr jedné či více šablon a konkrétních 1–7 dnů týdně. Potvrďte **Přidat do mého týdne**. Teprve poté se strategie i plán uloží. Ruční poznámky a kroky se zachovají.
+
+Dny mají vedle sebe vlastní checklisty s historií podle data; šipky přepínají týdny. Pod nimi je denní checklist Probuzení, Snídaně, Oběd, Večeře a Spánek, po 20 XP, nejvýše 100 XP za den. Datum mění zobrazovaný den, **Dnes** vrací aktuální den. Obě části se automaticky ukládají a zálohují.
+
+### Oblíbené položky v modalech
+
+Na problému, strategii nebo rutině otevřete pravým kliknutím nabídku **Označit jako oblíbené**. Hvězdičku odeberete stejnou nabídkou. Každý modal má filtr **★ Oblíbené**. Označení se ukládá okamžitě, je společné napříč sloty a přenáší se v záloze. Rozpracovaná strategie ani vybrané rutiny se označením nemění. Nabídku otevře také Shift+F10; Escape ji zavře.
+
+## 06 Cheats & Lifehacks
+
+Dvacet slotů pro vlastní problémy a 49 předpřipravených životních situací s pětikrokovými checklisty. Výběr problému otevírá modal souvisejících workflow. V knihovně lze hledat podle účelu, problému, oblasti i tagu a určit cílový slot. Vlastní situace a upravitelné tagy jsou podporované.
+
+Tagy propojují postupy i problémy mezi jednotlivými sloty. Každý slot může mít více různých workflow s vlastním průběhem. Poznámky a zaškrtnutí se zachovají při změně problému, ukládají se automaticky a přenášejí v záloze. Oblíbené označíte pravým kliknutím na kartu v modalu.
