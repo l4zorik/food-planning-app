@@ -2,6 +2,9 @@
 export const release = {
   version: '0.3.1', date: '2026-11-16',
   notes: [
+    { title: 'Patnáct služeb odměn', text: 'Katalog má nově 06 Business, 07 Vzdělávání, 08 Training, 09 Práce, 10 Koníčky, 14 Děti a 15 Výchova. Služby 11 AI, 12 Robotika a 13 Automizace jsou premium a v katalogu zůstávají zamčené.' },
+    { title: 'Training · pět podslužeb', text: 'Služba 08 Training má podslužby Mysl, Tělo, Duše, Víra a Bůh. Kliknutím na službu vyjedou; každá má vlastní čtyři etapy a vlastní zaškrtávání. Progress patra sčítá všech dvacet kroků.' },
+    { title: 'Hmotná podstata · smysl všeho', text: 'V modalu odměn je nová sekce s produktem celé cesty. První slot patří první službě: Investiční portfolio nájemních bytů. Slot má zaškrtnutí Získáno, ukazuje se i na spodním patře a přenáší v záloze.' },
     { title: 'Pět služeb odměn', text: 'Katalog odměn má pět spuštěných služeb: 01 Bydlení & investice, 02 Hygiena & péče o sebe (sprcha, nehty, vlasy, holení, praní prádla), 03 Cvičení, 04 Seznamování & rodina a 05 Přeprava & auto. Každá služba má vlastní etapy, progress bar i klidový stav; vybraná služba se ukládá automaticky.' },
     { title: 'Quest log · vlákno 04 ↔ 06 ↔ 07', text: 'Quest log, Moje proč a Odměny spojuje jedno vlákno: každý roh ukazuje společnou řádku a odkazy na zbývající dva. Quest log se při prvním spuštění jednou doplní aktuálními prioritami – směny 16.–22.11. a mise projektu od IČO po maximize profit. Existující questy se nepřepíšou.' },
     { title: 'Všech sedm sekcí podporuje quest log', text: 'Psychická pohoda, Týdenní plán, Nákupní seznam, Keeps & poznámky, ERP, Management i Cheats & Lifehacks mají podpůrnou lištu s aktivním questem, nejbližším krokem a tlačítkem do quest logu. AI kontext přikládá přehled všech sekcí, quest logu i odměn; zaškrtnutí je ve výchozím stavu zapnuté.' },

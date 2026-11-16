@@ -18,7 +18,7 @@ test('the AI context covers all seven sections, the quest log and the rewards fl
     ] },
     cheats: { slots },
     lifeFocus: { activeId: 'q1', quests: [{ id: 'q1', title: 'Směny 12h · 16.–22.11.', why: 'Priorita', sourceIndex: null, meaning: 'money', meaningTags: ['money', 'business'], steps: [{ id: 'a1', text: 'Noční směna 12h · pondělí 16.11.', done: false }], createdAt: '2026-11-16T08:00:00.000Z' }] },
-    rewards: { selectedService: 'hygiene', tracks: { hygiene: { stages: { shower: true, laundry: false }, note: 'Poznámka k cestě' } } },
+    rewards: { selectedService: 'hygiene', tracks: { hygiene: { stages: { shower: true, laundry: false }, note: 'Poznámka k cestě' }, training: { stages: {}, note: '', subs: { mind: { stages: { focus: true } } } } }, essence: { slots: [{ id: 'housing-essence', serviceId: 'housing', title: 'Investiční portfolio nájemních bytů', done: false }] } },
     perks: { modules: [{ templateId: 'mind', name: 'Psychická pohoda', problem: 'Vyčerpanost', solution: 'Můj záměr', reflection: 'Moje opora' }], findings: [] },
     subscription: { preferredPlan: 'plus' },
   }
@@ -40,6 +40,13 @@ test('the AI context covers all seven sections, the quest log and the rewards fl
   assert.equal(parsed.rewards.service, 'hygiene')
   assert.equal(parsed.rewards.stages.shower, true)
   assert.equal(parsed.rewards.note, 'Poznámka k cestě')
+  assert.deepEqual(parsed.rewards.subs, {})
+  assert.deepEqual(parsed.rewards.essence, [{ title: 'Investiční portfolio nájemních bytů', serviceId: 'housing', done: false }])
+  const trainingState = { rewards: { selectedService: 'training', tracks: { training: { stages: {}, note: '', subs: { mind: { stages: { focus: true } }, god: { stages: {} } } } } } }
+  const training = JSON.parse(summarizeProject(trainingState))
+  assert.equal(training.rewards.subs.mind.stages.focus, true)
+  assert.deepEqual(Object.keys(training.rewards.subs), ['mind', 'god'])
+  assert.equal(summarizeProject(trainingState).length <= 20000, true)
   assert.equal(parsed.subscription, 'plus')
   assert.ok(parsed.modules.some(module => module.name === 'Psychická pohoda'))
 })

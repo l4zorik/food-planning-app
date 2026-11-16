@@ -34,13 +34,20 @@ test('rewards default to the housing service on older data and repair partial tr
   assert.doesNotThrow(() => validateState(structuredClone(broken)))
 })
 
-test('five team-selected services each carry their own grounding stages', () => {
+test('fifteen team-selected services carry grounding stages, three of them premium', () => {
   assert.equal(rewardServices[0].id, 'housing')
-  assert.deepEqual(rewardServices.map(service => service.id), ['housing', 'hygiene', 'fitness', 'dating', 'transport'])
-  assert.deepEqual(rewardServices.map(service => service.number), ['01', '02', '03', '04', '05'])
-  assert.ok(rewardServices.every(service => service.status === 'active'))
-  assert.ok(rewardServices.every(service => service.stages.length >= 4 && service.stages.every(stage => stage.id && stage.name && stage.text)))
+  assert.deepEqual(rewardServices.map(service => service.id), ['housing', 'hygiene', 'fitness', 'dating', 'transport', 'business', 'education', 'training', 'work', 'hobbies', 'ai', 'robotics', 'automation', 'children', 'parenting'])
+  assert.deepEqual(rewardServices.map(service => service.number), ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15'])
+  assert.deepEqual(rewardServices.filter(service => service.status === 'premium').map(service => service.id), ['ai', 'robotics', 'automation'])
+  assert.equal(rewardServices.filter(service => service.status === 'active').length, 12)
+  assert.ok(rewardServices.every(service => service.status === 'active' || service.status === 'premium'))
+  assert.ok(rewardServices.filter(service => !service.subs).every(service => service.stages.length >= 4 && service.stages.every(stage => stage.id && stage.name && stage.text)))
+  const training = rewardServices.find(service => service.id === 'training')
+  assert.deepEqual(training.subs.map(sub => sub.id), ['mind', 'body', 'soul', 'faith', 'god'])
+  assert.ok(training.subs.every(sub => sub.stages.length === 4 && sub.stages.every(stage => stage.id && stage.name && stage.text)))
+  assert.equal(housingStages.length, 4)
   assert.deepEqual(housingStages.map(stage => stage.id), ['work', 'rent', 'investment', 'foundation'])
+  assert.equal(rewardServices[0].essence, 'Investiční portfolio nájemních bytů')
   assert.deepEqual(rewardProgress({ stages: { work: true, rent: true } }), { done: 2, total: 4, percent: 50 })
   assert.equal(rewardProgress(undefined).done, 0)
 })
@@ -60,7 +67,10 @@ test('bottom floor and reward dialog show the path, save stages and reach the ca
   assert.equal($('reward-services').children.length, rewardServices.length)
   assert.equal($('reward-services').children[0].getAttribute('aria-pressed'), 'true')
   assert.equal($('reward-services').children[1].disabled, false)
-  assert.equal($('reward-service-count').children[0].textContent, '5')
+  assert.equal($('reward-service-count').children[0].textContent, '12')
+  assert.equal($('reward-service-count').children[1].textContent, ' služeb spuštěno · 3 premium')
+  assert.equal($('reward-services').children[10].disabled, true) // 11 AI is premium
+  assert.equal($('reward-services').children[10].getAttribute('aria-pressed'), 'false')
   // Every service keeps its own track: switching to Hygiena shows its five stages.
   $('reward-services').children[1].emit('click')
   assert.equal(state.rewards.selectedService, 'hygiene')
@@ -99,7 +109,97 @@ test('saved reward data passes store validation while malformed tracks are rejec
   assert.throws(() => validateState({ rewards: { selectedService: 'housing', tracks: { housing: { stages: { work: 'yes' }, note: '' } } } }))
   assert.throws(() => validateState({ rewards: { selectedService: 'housing', tracks: { housing: { stages: { work: true }, note: 5 } } } }))
   assert.throws(() => validateState({ rewards: { selectedService: 'housing', tracks: 'housing' } }))
+  // Premium services cannot be selected as the active track.
+  assert.throws(() => validateState({ rewards: { selectedService: 'ai' } }))
+  // Training keeps one track per subservice; the essence slots are products of the path.
+  assert.doesNotThrow(() => validateState({ rewards: { selectedService: 'training', tracks: { training: { stages: {}, note: '', subs: { mind: { stages: { focus: true } } } } }, essence: { slots: [{ id: 'housing-essence', serviceId: 'housing', title: 'Investiční portfolio nájemních bytů', done: false }] } } }))
+  assert.throws(() => validateState({ rewards: { selectedService: 'housing', tracks: { training: { stages: {}, note: '', subs: { mind: { stages: { focus: 'yes' } } } } } } }))
+  assert.throws(() => validateState({ rewards: { selectedService: 'housing', essence: { slots: [{ id: 'housing-essence', serviceId: 'housing', title: 5, done: false }] } } }))
+  assert.throws(() => validateState({ rewards: { selectedService: 'housing', essence: { slots: [{ id: 'dup', serviceId: 'housing', title: 'A', done: false }, { id: 'dup', serviceId: 'business', title: 'B', done: false }] } } }))
 })
+
+test('training slides out five subservices with their own tracks and progress', () => withDocument($ => {
+  const state = {}
+  let saves = 0
+  const ui = setupRewards({ getState: () => state, save: () => saves++ })
+  ui.render()
+  $('rewards-open').emit('click')
+  const cards = $('reward-services').children
+  // Index 7 is Training (08).
+  cards[7].emit('click')
+  assert.equal(state.rewards.selectedService, 'training')
+  assert.equal($('reward-subs').hidden, false)
+  assert.equal($('reward-subs').children.length, 5)
+  assert.deepEqual($('reward-subs').children.map(chip => chip.children[1].textContent), ['Mysl', 'Tělo', 'Duše', 'Víra', 'Bůh'])
+  assert.equal($('reward-subs').children[0].getAttribute('aria-pressed'), 'true')
+  // The floor aggregates all five subservices: 5 × 4 stages.
+  assert.equal($('rewards-floor-label').textContent, '0/20 etap · 0 %')
+  assert.equal($('rewards-floor-stages').children.length, 5)
+  assert.equal($('reward-stages').children.length, 4)
+  assert.ok($('reward-track-title').textContent.includes('Mysl'))
+  // Checking a stage in Mysl updates its chip without touching Tělo.
+  const check = $('reward-stages').children[0].children[0]
+  check.checked = true; check.emit('change')
+  assert.equal(state.rewards.tracks.training.subs.mind.stages.focus, true)
+  assert.equal($('reward-subs').children[0].children[2].textContent, '1/4')
+  assert.equal($('rewards-floor-label').textContent, '1/20 etap · 5 %')
+  // Switching to the Tělo subservice shows its stages and keeps the track.
+  $('reward-subs').children[1].emit('click')
+  assert.equal($('reward-subs').children[1].getAttribute('aria-pressed'), 'true')
+  assert.ok($('reward-track-title').textContent.includes('Tělo'))
+  assert.equal($('reward-stages').children.length, 4)
+  assert.equal($('reward-stages').children[0].children[0].checked, false)
+  $('reward-stages').children[0].children[0].checked = true; $('reward-stages').children[0].children[0].emit('change')
+  assert.equal(state.rewards.tracks.training.subs.body.stages.move, true)
+  assert.equal($('rewards-floor-label').textContent, '2/20 etap · 10 %')
+  assert.ok(saves >= 2)
+  // Premium services stay locked even when clicked.
+  cards[10].emit('click')
+  assert.equal(state.rewards.selectedService, 'training')
+  assert.equal($('reward-subs').hidden, false)
+  ui.render()
+  assert.equal($('reward-subs').children.length, 5)
+}))
+
+test('the material essence seeds its first slot and shows it on floor and dialog', () => withDocument($ => {
+  const state = {}
+  let saves = 0
+  const ui = setupRewards({ getState: () => state, save: () => saves++ })
+  ui.render()
+  assert.equal(state.rewards.essence.slots.length, 1)
+  assert.equal(state.rewards.essence.slots[0].id, 'housing-essence')
+  assert.equal(state.rewards.essence.slots[0].serviceId, 'housing')
+  assert.equal(state.rewards.essence.slots[0].title, 'Investiční portfolio nájemních bytů')
+  assert.equal(state.rewards.essence.slots[0].done, false)
+  assert.equal($('rewards-floor-essence').textContent, 'Investiční portfolio nájemních bytů')
+  assert.doesNotThrow(() => validateState(structuredClone(state)))
+  $('rewards-open').emit('click')
+  assert.equal($('reward-essence').children.length, 1)
+  const slot = $('reward-essence').children[0]
+  assert.ok(slot.children[0].children[0].children[1].textContent.includes('Bydlení'))
+  assert.equal(slot.children[0].children[1].children[0].textContent, 'Investiční portfolio nájemních bytů')
+  // Marking the product done reaches the meaning of everything.
+  const check = slot.children[1].children[0]
+  check.checked = true; check.emit('change')
+  assert.equal(state.rewards.essence.slots[0].done, true)
+  assert.equal($('rewards-floor-essence').textContent, '✓ Investiční portfolio nájemních bytů')
+  assert.ok(saves >= 1)
+  // Older data without essence gains the slot on repair; existing slots survive.
+  const older = { rewards: { selectedService: 'housing', tracks: {}, essence: { slots: [{ id: 'housing-essence', serviceId: 'housing', title: 'Investiční portfolio nájemních bytů', done: true }] } } }
+  const repaired = { rewards: { selectedService: 'housing', tracks: {} } }
+  ensureRewards(repaired)
+  assert.equal(repaired.rewards.essence.slots.length, 1)
+  ensureRewards(older)
+  assert.equal(older.rewards.essence.slots.length, 1)
+  assert.equal(older.rewards.essence.slots[0].done, true)
+  assert.doesNotThrow(() => validateState(structuredClone(older)))
+  // Re-running never duplicates the slot.
+  ensureRewards(state)
+  assert.equal(state.rewards.essence.slots.length, 1)
+  assert.doesNotThrow(() => validateState(structuredClone(state)))
+  ui.render()
+  assert.equal($('reward-essence').children.length, 1)
+}))
 
 test('daily progress shows the calm home while XP values stay in the data', () => withDocument($ => {
   const slot = { dayProgress: {} }

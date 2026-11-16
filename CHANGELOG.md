@@ -1,3 +1,11 @@
+## 2026-11-16 · Služby 06–15, Training a hmotná podstata
+
+- Katalog odměn rozšířen na 15 služeb: 06 Business, 07 Vzdělávání, 08 Training, 09 Práce, 10 Koníčky, 14 Děti a 15 Výchova.
+- Služby 11–13 (AI, Robotika, Automizace) jsou premium: zamčené karty se zámkem, nelze je vybrat, jen čekají na předplatné.
+- Training má pět podslužeb – Mysl, Tělo, Duše, Víra a Bůh. Kliknutím na službu vyjedou; každá má vlastní čtyři etapy, vlastní stopu i vlastní zaškrtávání.
+- Nová sekce **Hmotná podstata · smysl všeho** v modalu odměn: produkt celé cesty. První slot (služba 01) je **Investiční portfolio nájemních bytů**, výsledek se ukazuje i na spodním patře.
+- Validace zálohy zná podslužby i sloty hmotné podstaty; premium službu není možné uložit jako aktivní výběr.
+
 ## 2026-11-16 · Pět služeb odměn, vlákno quest logu a podpora všech sekcí
 
 - Katalog odměn rozšířen na pět spuštěných služeb: 01 Bydlení & investice, 02 Hygiena & péče o sebe (sprcha, nehty, vlasy, holení, praní prádla), 03 Cvičení, 04 Seznamování & rodina, 05 Přeprava & auto. Každá služba má vlastní etapy, progress bar i klidový stav; výběr služby se ukládá automaticky.

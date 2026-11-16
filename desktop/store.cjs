@@ -122,11 +122,25 @@ function validateState(state) {
     const record = value => value && typeof value === 'object' && !Array.isArray(value)
     const id = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,39}$/.test(value)
     if (!record(r) || !id(r.selectedService)) throw Error('Invalid rewards.')
+    if (['ai', 'robotics', 'automation'].includes(r.selectedService)) throw Error('Premium reward service is locked until its entitlement ships.')
     if (r.tracks !== undefined) {
       if (!record(r.tracks)) throw Error('Invalid reward tracks.')
       for (const [serviceId, track] of Object.entries(r.tracks)) {
         if (!id(serviceId) || !record(track) || !record(track.stages) || !Object.entries(track.stages).every(([stageId, done]) => id(stageId) && typeof done === 'boolean') || typeof track.note !== 'string') throw Error('Invalid reward track.')
+        if (track.subs !== undefined) {
+          if (!record(track.subs)) throw Error('Invalid reward subservices.')
+          for (const [subId, subTrack] of Object.entries(track.subs)) {
+            if (!id(subId) || !record(subTrack) || !record(subTrack.stages) || !Object.entries(subTrack.stages).every(([stageId, done]) => id(stageId) && typeof done === 'boolean')) throw Error('Invalid reward subtrack.')
+          }
+        }
       }
+    }
+    if (r.essence !== undefined) {
+      if (!record(r.essence) || !Array.isArray(r.essence.slots)) throw Error('Invalid reward essence.')
+      for (const slot of r.essence.slots) {
+        if (!record(slot) || !id(slot.id) || !id(slot.serviceId) || typeof slot.title !== 'string' || typeof slot.done !== 'boolean') throw Error('Invalid reward essence slot.')
+      }
+      if (new Set(r.essence.slots.map(slot => slot.id)).size !== r.essence.slots.length) throw Error('Duplicate reward essence slot.')
     }
   }
   if (state.theme !== undefined) {

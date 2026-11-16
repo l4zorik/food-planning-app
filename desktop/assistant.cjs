@@ -35,7 +35,11 @@ function summarizeProject(state) {
       lifehacks: (state.cheats?.slots || []).filter(slot => slot.problem || slot.workflows.length || slot.notes).map(slot => ({ problem: slot.problem?.name || null, workflows: slot.workflows.length, notes: slot.notes })),
     },
     questLog: { active: active?.title || null, quests },
-    rewards: { service: state.rewards?.selectedService || 'housing', stages: state.rewards?.tracks?.[state.rewards?.selectedService || 'housing']?.stages || {}, note: state.rewards?.tracks?.[state.rewards?.selectedService || 'housing']?.note || '' },
+    rewards: (() => {
+      const id = state.rewards?.selectedService || 'housing'
+      const track = state.rewards?.tracks?.[id] || {}
+      return { service: id, stages: track.stages || {}, subs: track.subs || {}, note: track.note || '', essence: (state.rewards?.essence?.slots || []).map(slot => ({ title: slot.title, serviceId: slot.serviceId, done: slot.done })) }
+    })(),
     modules: (state.perks?.modules || []).map(module => ({ name: module.name, problem: module.problem, solution: module.solution })),
     subscription: state.subscription?.preferredPlan || 'free',
   }).slice(0, 20000)

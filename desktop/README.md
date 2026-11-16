@@ -87,7 +87,13 @@ Tagy propojují postupy i problémy mezi jednotlivými sloty. Každý slot můž
 
 Přes celou šířku aplikace pod pracovní plochou je spodní patro **07 · Odměny**. Místo bodů je grounding odměna **Klidný domov**; službu, etapy, progress bar i poznámku vidíte bez otevírání čehokoliv dalšího.
 
-Speciální služby vybírá tým aplikace, spuštěných je pět. **01 Bydlení & investice do nemovitosti** vede po čtyřech etapách: **Práce → Nájem → Investiční byt → Základ projektu**, každá s vlastní rolí cesty. Dále běží **02 Hygiena & péče o sebe** (sprcha, stříhání nehtů a vlasů, holení tváře, praní prádla), **03 Cvičení**, **04 Seznamování & rodina** a **05 Přeprava & auto**. Každá služba má vlastní etapy, progress bar i klidový stav; v modalu službu přepínáte a vybraná se ukládá.
+Speciální služby vybírá tým aplikace, spuštěných je dvanáct z patnácti. **01 Bydlení & investice do nemovitosti** vede po čtyřech etapách: **Práce → Nájem → Investiční byt → Základ projektu**. Dále běží **02 Hygiena & péče o sebe**, **03 Cvičení**, **04 Seznamování & rodina**, **05 Přeprava & auto**, **06 Business**, **07 Vzdělávání**, **08 Training**, **09 Práce**, **10 Koníčky**, **14 Děti** a **15 Výchova**. Každá služba má vlastní etapy, progress bar i klidový stav; v modalu službu přepínáte a vybraná se ukládá.
+
+Premium služby **11 AI**, **12 Robotika** a **13 Automizace** jsou v katalogu vidět jako zamčené karty se zámkem; nelze je vybrat a čekají na předplatné.
+
+**08 Training** má pět podslužeb: **Mysl, Tělo, Duše, Víra a Bůh**. Kliknutím na službu vyjedou jako chipy; každá podslužba má vlastní čtyři etapy, vlastní stopu v datech a vlastní zaškrtávání. Progress patra i modalu sčítá všech dvacet kroků.
+
+**Hmotná podstata · smysl všeho** je sekce v modalu odměn: produkt celé cesty, ke kterému směřuje všechno ostatní. První slot patří první službě – **Investiční portfolio nájemních bytů**. Slot se ukazuje i na spodním patře, má zaškrtnutí **Získáno** a ukládá se automaticky. Validace a zálohy znají sloty i podslužby; starší zálohy bez nich fungují dál.
 
 Tlačítkem **Otevřít odměny** se otevře modal s výběrem služeb, etapami s zaškrtáváním, stavem **Klidný domov** po poslední etapě a vlastní poznámkou k cestě. Stejný modal otevřete i z pravého panelu pod **06 Moje proč**. Výběr služby, etapy i poznámka se ukládají automaticky, jsou součástí zálohy a starší zálohy bez nich fungují dál.
 
