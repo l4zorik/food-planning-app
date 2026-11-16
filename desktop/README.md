@@ -71,7 +71,7 @@ Marihuana, porno, sociální sítě, lust/modelky a přejídání mají vlastní
 
 V každém z pěti slotů otevřete modal strategií a vyberte jednu z 50 možností. Výběry fungují pro libovolný problém i vlastní téma; hlavička modalu ukazuje slot a jeho problém. Navazující modal nabízí 15 rutin, výběr jedné či více šablon a konkrétních 1–7 dnů týdně. Potvrďte **Přidat do mého týdne**. Teprve poté se strategie i plán uloží. Ruční poznámky a kroky se zachovají.
 
-Dny mají vedle sebe vlastní checklisty s historií podle data; šipky přepínají týdny. Pod nimi je denní checklist Probuzení, Snídaně, Oběd, Večeře a Spánek, po 20 XP, nejvýše 100 XP za den. Datum mění zobrazovaný den, **Dnes** vrací aktuální den. Obě části se automaticky ukládají a zálohují.
+Dny mají vedle sebe vlastní checklisty s historií podle data; šipky přepínají týdny. Pod nimi je denní checklist Probuzení, Snídaně, Oběd, Večeře a Spánek; každý bod přidává klid místo XP a horní ukazatel ukazuje klidný domov. Starší bodové záznamy zůstávají v datech i záloze, jen se nezobrazují. Datum mění zobrazovaný den, **Dnes** vrací aktuální den. Obě části se automaticky ukládají a zálohují.
 
 ### Oblíbené položky v modalech
 
@@ -82,6 +82,14 @@ Na problému, strategii nebo rutině otevřete pravým kliknutím nabídku **Ozn
 Dvacet slotů pro vlastní problémy a 49 předpřipravených životních situací s pětikrokovými checklisty. Výběr problému otevírá modal souvisejících workflow. V knihovně lze hledat podle účelu, problému, oblasti i tagu a určit cílový slot. Vlastní situace a upravitelné tagy jsou podporované.
 
 Tagy propojují postupy i problémy mezi jednotlivými sloty. Každý slot může mít více různých workflow s vlastním průběhem. Poznámky a zaškrtnutí se zachovají při změně problému, ukládají se automaticky a přenášejí v záloze. Oblíbené označíte pravým kliknutím na kartu v modalu.
+
+## Odměny · spodní patro Klidný domov
+
+Přes celou šířku aplikace pod pracovní plochou je spodní patro **07 · Odměny**. Místo bodů je grounding odměna **Klidný domov**; službu, etapy, progress bar i poznámku vidíte bez otevírání čehokoliv dalšího.
+
+Speciální služby vybírá tým aplikace. Spuštěná služba **01 Bydlení & investice do nemovitosti** vede po čtyřech etapách: **Práce → Nájem → Investiční byt → Základ projektu**, každá s vlastní rolí cesty. Ostatní služby jsou označené jako připravované.
+
+Tlačítkem **Otevřít odměny** se otevře modal s výběrem služeb, etapami s zaškrtáváním, stavem **Klidný domov** po poslední etapě a vlastní poznámkou k cestě. Stejný modal otevřete i z pravého panelu pod **06 Moje proč**. Výběr služby, etapy i poznámka se ukládají automaticky, jsou součástí zálohy a starší zálohy bez nich fungují dál.
 
 ## Pravý panel · Moje perky
 

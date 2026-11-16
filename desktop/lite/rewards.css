@@ -1,0 +1,53 @@
+/* Grounding rewards · the calm bottom floor of the app. */
+.rewards-floor{display:grid;grid-template-columns:minmax(215px,.85fr) minmax(190px,.8fr) minmax(320px,1.6fr) auto;gap:28px;align-items:center;margin-top:26px;padding:28px 32px;border:1px solid var(--border);border-radius:22px;background:linear-gradient(140deg,var(--card),var(--accent))}
+.rewards-floor .eyebrow{margin-bottom:7px}
+.rewards-floor-intro h2{font-family:Georgia,serif;font-size:27px;font-weight:400;letter-spacing:.2px;margin:0 0 8px}
+.rewards-floor-intro p{margin:0;font-size:11px;line-height:1.8;color:var(--muted-foreground);max-width:36ch}
+.rewards-floor-service{display:flex;gap:12px;align-items:center;min-width:0}
+.rewards-floor-icon{font-size:30px;line-height:1}
+.rewards-floor-service small{display:block;font-size:9px;letter-spacing:1.4px;color:var(--muted-foreground)}
+.rewards-floor-service strong{display:block;font-size:13px;line-height:1.6;margin-top:5px;overflow-wrap:anywhere}
+.rewards-floor-progress{display:grid;gap:7px}
+.rewards-floor-progress span{font-size:11px;color:var(--muted-foreground)}
+.rewards-floor-progress progress{width:100%;height:8px}
+.rewards-floor-stages{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0 0;padding:0}
+.reward-floor-stage{display:flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--card);min-width:0}
+.reward-floor-stage.is-done{border-color:var(--primary);background:var(--accent)}
+.reward-floor-stage .reward-stage-icon{font-size:15px;line-height:1}
+.reward-floor-stage .reward-stage-copy{display:grid;gap:2px;min-width:0}
+.reward-floor-stage strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reward-floor-stage small{font-size:9px;letter-spacing:.4px;color:var(--muted-foreground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rewards-floor-action{display:grid;gap:8px;justify-items:end}
+.rewards-floor-action small{font-size:9px;letter-spacing:.6px;color:var(--muted-foreground)}
+.focus-meaning-rewards{display:grid;gap:8px;border-top:1px solid var(--border);margin-top:15px;padding-top:13px}
+.focus-meaning-rewards strong{font-size:11px;font-weight:600;line-height:1.6;color:var(--muted-foreground);overflow-wrap:anywhere}
+.focus-meaning-rewards button{font-size:11px;width:100%;text-align:left}
+.reward-section-title{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted-foreground);margin:26px 0 12px}
+.reward-services{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.reward-service{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;text-align:left;padding:16px;border-radius:14px;background:var(--background)}
+.reward-service.is-selected{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary)}
+.reward-service.is-planned{opacity:.55;cursor:not-allowed}
+.reward-service-icon{font-size:24px;line-height:1.2}
+.reward-service-copy{display:grid;gap:6px;min-width:0}
+.reward-service-copy small{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted-foreground)}
+.reward-service-copy p{margin:0;font-size:11px;line-height:1.7;color:var(--muted-foreground)}
+.reward-service-copy .reward-service-tagline{text-transform:none;letter-spacing:.2px;color:var(--primary)}
+.reward-service-mark{font-size:14px;color:var(--primary)}
+.reward-track-intro{font-size:12px;line-height:1.8;color:var(--muted-foreground);margin:0}
+.reward-progress{display:grid;gap:8px;margin:14px 0 18px}
+.reward-progress span{font-size:11px;color:var(--muted-foreground)}
+.reward-progress progress{width:100%;height:10px}
+.reward-stages{display:grid;gap:10px}
+.reward-stage{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--border);border-radius:14px;background:var(--background);cursor:pointer}
+.reward-stage.is-done{border-color:var(--primary);background:var(--accent)}
+.reward-stage input{width:18px;height:18px;accent-color:var(--primary)}
+.reward-stage .reward-stage-copy{display:grid;gap:4px}
+.reward-stage .reward-stage-copy strong{font-size:13px}
+.reward-stage .reward-stage-copy small{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted-foreground)}
+.reward-stage .reward-stage-copy p{margin:0;font-size:11px;line-height:1.7;color:var(--muted-foreground)}
+.reward-stage .reward-stage-mark{font-size:16px}
+.reward-calm-state{margin-top:16px;padding:18px 20px;border:1px solid var(--primary);border-radius:14px;background:var(--accent);font-size:13px;line-height:1.7}
+.reward-note{display:grid;gap:8px;font-size:11px;color:var(--muted-foreground);margin-top:18px}
+@media(max-width:1120px){.rewards-floor{grid-template-columns:1fr}.rewards-floor-action{justify-items:start}.rewards-floor-stages{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.reward-services{grid-template-columns:1fr}}
+@media print{.rewards-floor,.reward-picker{display:none!important}}

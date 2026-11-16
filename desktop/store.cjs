@@ -2,7 +2,7 @@ const fs = require('node:fs/promises')
 const path = require('node:path')
 const { createHash, randomUUID } = require('node:crypto')
 
-const allowedKeys = new Set(['meals', 'ingredients', 'notes', 'keeps', 'theme', 'discover', 'aiPlans', 'management', 'cheats', 'perks', 'lifeFocus', 'projectAssistant', 'subscription'])
+const allowedKeys = new Set(['meals', 'ingredients', 'notes', 'keeps', 'theme', 'discover', 'aiPlans', 'management', 'cheats', 'perks', 'lifeFocus', 'projectAssistant', 'subscription', 'rewards'])
 const mediaPattern = /^[a-f0-9]{64}\.(png|jpg|gif|webp|mp4|webm)$/
 const mimeTypes = { png: 'image/png', jpg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', mp4: 'video/mp4', webm: 'video/webm' }
 
@@ -116,6 +116,18 @@ function validateState(state) {
   if (state.subscription !== undefined) {
     const s = state.subscription
     if (!s || typeof s !== 'object' || !['free', 'plus', 'studio'].includes(s.preferredPlan) || s.cycle !== 'monthly' || s.activePlan !== 'free' || s.paymentStatus !== 'not-connected') throw Error('Invalid subscription preparation. Paid entitlements require a connected billing backend.')
+  }
+  if (state.rewards !== undefined) {
+    const r = state.rewards
+    const record = value => value && typeof value === 'object' && !Array.isArray(value)
+    const id = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,39}$/.test(value)
+    if (!record(r) || !id(r.selectedService)) throw Error('Invalid rewards.')
+    if (r.tracks !== undefined) {
+      if (!record(r.tracks)) throw Error('Invalid reward tracks.')
+      for (const [serviceId, track] of Object.entries(r.tracks)) {
+        if (!id(serviceId) || !record(track) || !record(track.stages) || !Object.entries(track.stages).every(([stageId, done]) => id(stageId) && typeof done === 'boolean') || typeof track.note !== 'string') throw Error('Invalid reward track.')
+      }
+    }
   }
   if (state.theme !== undefined) {
     const t = state.theme

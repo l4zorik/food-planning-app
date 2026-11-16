@@ -1,3 +1,12 @@
+## 2026-11-16 · Odměny: spodní patro Klidný domov
+
+- Nové spodní patro přes celou šířku aplikace: grounding odměny místo bodů, výchozí stav se doplní i ve starších datech.
+- Speciální služby vybírá tým aplikace; spuštěná služba 01 Bydlení & investice do nemovitosti, další připravované.
+- Progress bar k prvnímu investičnímu bytu: Práce → Nájem → Investiční byt → Základ projektu, každá etapa s vlastní rolí cesty.
+- Modal odměn s výběrem služeb, etapami, klidovým stavem Klidný domov a vlastní poznámkou; odkaz i pod 06 Moje proč v pravém panelu.
+- Průběh dne nově ukazuje klid místo XP; bodové záznamy zůstávají v datech i záloze, jen se nezobrazují.
+- Validace a zálohy znají sekci rewards; starší zálohy bez ní zůstávají podporované.
+
 ## 2026-11-14 · Psychická pohoda jako základní baterie projektu
 
 - Nová výchozí hlavní obrazovka pro všechny, první položka navigace a přímé odkazy do šesti nástrojových sekcí.

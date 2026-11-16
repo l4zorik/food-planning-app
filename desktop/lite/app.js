@@ -10,6 +10,7 @@ import { setupPerks } from './perks.js'
 import { setupLifeFocus } from './life-focus.js'
 import { setupProjectAssistant } from './project-assistant.js'
 import { setupSubscriptions } from './subscriptions.js'
+import { setupRewards } from './rewards.js'
 
 const api = window.personalDesktop
 const $ = id => document.getElementById(id)
@@ -20,6 +21,7 @@ const perks = setupPerks({ getState: () => state, save: queueSave })
 const lifeFocus = setupLifeFocus({ getState: () => state, save: queueSave, onSourceChange: () => lifehacks.render() })
 const projectAssistant = setupProjectAssistant({ getState: () => state, save: queueSave, api, flush })
 const subscriptions = setupSubscriptions({ getState: () => state, save: queueSave })
+const rewards = setupRewards({ getState: () => state, save: queueSave })
 const keepActions = setupKeepActions({
   getKeeps: () => state.keeps || [],
   update: (id, replacement) => { state.keeps = (state.keeps || []).map(keep => keep.id === id ? replacement : keep); queueSave(); renderKeeps() },
@@ -234,7 +236,7 @@ $('restore-backup').addEventListener('click', async () => {
 })
 $('save-pdf').addEventListener('click', async () => { try { await flush(); await api.savePdf() } catch (e) { error(e.message) } })
 for (const button of document.querySelectorAll('[data-view]')) button.addEventListener('click', () => selectView(button.dataset.view))
-function renderAll() { renderWeek(); renderShopping(); renderKeeps(); management.render(); perks.render(); lifeFocus.render(); lifehacks.render(); projectAssistant.render(); subscriptions.render(); applyTheme() }
+function renderAll() { renderWeek(); renderShopping(); renderKeeps(); management.render(); perks.render(); lifeFocus.render(); lifehacks.render(); projectAssistant.render(); subscriptions.render(); rewards.render(); applyTheme() }
 
 if (!api) { error('Tuto aplikaci spusť pomocí Electronu, ne jako běžnou webovou stránku.'); document.querySelectorAll('button,input,textarea,select').forEach(control => control.disabled = true) }
 else {

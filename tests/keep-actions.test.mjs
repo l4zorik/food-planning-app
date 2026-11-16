@@ -150,7 +150,7 @@ test('filtering groups and deleting a visible Keep preserves all other groups', 
     themeCatalog: { color: [{ id: 'sage' }] }, defaultPreference: { mode: 'color', id: 'sage' }, readPreference: JSON.parse,
     resolveTheme: () => ({ name: 'Sage', id: 'sage' }), themeVariables: () => ({}), setupUpdates: async () => {},
   })
-  for (const file of ['keep-style.js', 'keep-actions.js', 'keep-order.js', 'keep-drag.js', 'problem-catalog.js', 'modal-favorites.js', 'problem-picker.js', 'strategy-catalog.js', 'routine-model.js', 'routine-board.js', 'strategy-picker.js', 'management.js', 'lifehacks-catalog.js', 'lifehacks.js', 'perks-catalog.js', 'perks.js', 'life-focus.js', 'project-assistant.js', 'subscriptions.js']) {
+  for (const file of ['keep-style.js', 'keep-actions.js', 'keep-order.js', 'keep-drag.js', 'problem-catalog.js', 'modal-favorites.js', 'problem-picker.js', 'strategy-catalog.js', 'routine-model.js', 'routine-board.js', 'strategy-picker.js', 'management.js', 'lifehacks-catalog.js', 'lifehacks.js', 'perks-catalog.js', 'perks.js', 'life-focus.js', 'project-assistant.js', 'subscriptions.js', 'rewards.js']) {
     vm.runInContext((await readFile(new URL(`../desktop/lite/${file}`, import.meta.url), 'utf8')).replace(/^import .*$/gm, '').replaceAll('export function ', 'function ').replaceAll('export const ', 'const '), context)
   }
   const app = (await readFile(new URL('../desktop/lite/app.js', import.meta.url), 'utf8')).replace(/^import .*$/gm, '')

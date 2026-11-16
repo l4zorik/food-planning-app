@@ -65,7 +65,7 @@ export function renderDailyProgress(container, slot, save, now = () => new Date(
     meter.max = 5; meter.setAttribute('aria-label', 'Průběh dne: počet splněných bodů')
     function update() {
       const result = milestoneScore(slot.dayProgress?.[selectedDate])
-      score.textContent = `${result.xp} / 100 XP · ${result.done}/5`; meter.value = result.done
+      score.textContent = `${result.done}/5 · klidný domov`; meter.value = result.done
     }
     update(); toolbar.append(title, label, today, score)
     const list = routineNode('div', undefined, 'daily-milestones')
@@ -77,7 +77,7 @@ export function renderDailyProgress(container, slot, save, now = () => new Date(
         slot.dayProgress ??= {}; slot.dayProgress[selectedDate] ??= {}; slot.dayProgress[selectedDate][key] = check.checked
         item.classList.toggle('is-complete', check.checked); update(); save()
       })
-      item.append(check, routineNode('span', icon, 'daily-milestone-icon'), routineNode('strong', name), routineNode('small', '+20 XP'))
+      item.append(check, routineNode('span', icon, 'daily-milestone-icon'), routineNode('strong', name), routineNode('small', '+ klid'))
       list.append(item)
     }
     container.append(toolbar, meter, list)

@@ -34,7 +34,7 @@ Ve všech pěti slotech, pro libovolný problém včetně vlastního tématu, ot
 
 V části **Rutina** se zvolené dny zobrazují vedle sebe, každý s vlastním checklistem. Šipky přepínají týdny. Odškrtnutí se ukládá podle data, změna šablon zachovává historii i původní ruční kroky. Pole **Můj konkrétní krok** ponechává vaše poznámky; prázdné pole se při potvrzení doplní názvy rutin. Nový výběr upraví aktivní týdenní plán.
 
-Pod rutinou je **Průběh dne**: Probuzení, Snídaně, Oběd, Večeře, Spánek. Každý bod má 20 XP, nejvýše 100 XP za datum. Opakované zaškrtnutí body nenásobí. Datum umožňuje zobrazit předchozí den; tlačítko **Dnes** vrací aktuální místní datum. Týdenní checklisty a denní body jsou nezávislé, automaticky uložené a součástí zálohy. Starší zálohy bez těchto polí fungují dál.
+Pod rutinou je **Průběh dne**: Probuzení, Snídaně, Oběd, Večeře, Spánek. Každý bod přidává klid místo bodů, už se nezobrazují XP. Starší bodové záznamy zůstávají v datech i záloze, jen se nezobrazují; opakované zaškrtnutí nic nenásobí. Datum umožňuje zobrazit předchozí den; tlačítko **Dnes** vrací aktuální místní datum. Týdenní checklisty a denní body jsou nezávislé, automaticky uložené a součástí zálohy. Starší zálohy bez těchto polí fungují dál.
 
 Strategie jsou výběr praktických možností, nikoli žebříček účinnosti. Kontext pro jejich přípravu: [NICE – změna chování a malé kroky](https://www.nice.org.uk/guidance/ph49/chapter/recommendations), [Mayo Clinic – práce se spouštěči a vlastními hranicemi](https://www.mayoclinic.org/diseases-conditions/compulsive-sexual-behavior/diagnosis-treatment/drc-20360453).
 
@@ -55,6 +55,8 @@ Tři propojené modaly vedou od **způsobů hledání** přes **nalezené probl�
 Každý perk má vlastní souvislosti a poznámky, výchozí situaci, řešení, upravitelný checklist workflow a dokumentaci technického postupu. Návrh automatizace obsahuje spouštěč, vstupy, kroky, výstupy a hranice; jde o uloženou přípravu pro vyšší verzi, nikoliv spouštění automatických akcí. Nové chyby, poznatky a otevřené otázky nemají pevný počet. **Skill pohoda** označuje tuto část jako nápady na budoucí aktualizace softwaru. Moduly, pozorování, dokumentace i návrhy se ukládají automaticky a přenášejí v záloze; starší zálohy zůstávají podporované.
 
 **Psychická pohoda je výchozí hlavní obrazovka pro všechny**, také po načtení starších dat. Základní modul se doplní, pokud chybí; existující zápisy ani další moduly se nepřepisují. Pole **Co už je v pořádku a co chci zachovat?** a **Čemu chci dát prostor?** sdílejí přímo souvislosti a řešení základního modulu. Hlavní obrazovka nabízí další perky a odkazy na všech šest nástrojových sekcí. Domů se vrátíte prvním tlačítkem **Psychická pohoda** v navigaci. Symbol baterie je označením základu projektu, bez hodnocení psychického stavu. Novinky se otevírají ručně z hlavičky.
+
+Přes celou šířku aplikace dole je spodní patro **07 · Odměny** s grounding odměnou **Klidný domov** místo bodů. Speciální služby vybírá tým aplikace; první spuštěná služba je **Bydlení & investice do nemovitosti** s vlastním progress barem po etapách **Práce → Nájem → Investiční byt → Základ projektu**. Stejná cesta je i v modalu odměn s etapami, klidovým stavem a vlastní poznámkou; odkaz najdete i v pravém panelu pod **06 Moje proč**. Služba, etapy i poznámka se ukládají automaticky a přenášejí v záloze, starší zálohy bez nich fungují dál.
 
 ## Vytvořit Windows EXE
 
