@@ -50,6 +50,7 @@ test('actual application starts on wellbeing, opens updates on demand and naviga
   const context = vm.createContext({ document, window, Date, setTimeout, clearTimeout, setInterval() {},
     setupKeepActions: () => ({ close() {} }), setupKeepDrag: () => ({ clear() {} }), setupManagement: () => ({ render() {} }), setupLifehacks: () => ({ render() {} }), setupPerks: () => ({ render() {} }),
     setupLifeFocus: () => ({ render() {} }), setupProjectAssistant: () => ({ render() {} }),
+    seedQuestLog: () => {},
     setupRewards: () => ({ render() {} }),
     setupSubscriptions: () => ({ render() {} }),
     themeCatalog: { color: [{ id: 'sage' }] }, defaultPreference: { mode: 'color', id: 'sage', automatic: false }, readPreference: JSON.parse,

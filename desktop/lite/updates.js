@@ -1,7 +1,10 @@
 // Each shipped build carries its own offline update log.
 export const release = {
-  version: '0.3.0', date: '2026-11-14',
+  version: '0.3.1', date: '2026-11-16',
   notes: [
+    { title: 'Pět služeb odměn', text: 'Katalog odměn má pět spuštěných služeb: 01 Bydlení & investice, 02 Hygiena & péče o sebe (sprcha, nehty, vlasy, holení, praní prádla), 03 Cvičení, 04 Seznamování & rodina a 05 Přeprava & auto. Každá služba má vlastní etapy, progress bar i klidový stav; vybraná služba se ukládá automaticky.' },
+    { title: 'Quest log · vlákno 04 ↔ 06 ↔ 07', text: 'Quest log, Moje proč a Odměny spojuje jedno vlákno: každý roh ukazuje společnou řádku a odkazy na zbývající dva. Quest log se při prvním spuštění jednou doplní aktuálními prioritami – směny 16.–22.11. a mise projektu od IČO po maximize profit. Existující questy se nepřepíšou.' },
+    { title: 'Všech sedm sekcí podporuje quest log', text: 'Psychická pohoda, Týdenní plán, Nákupní seznam, Keeps & poznámky, ERP, Management i Cheats & Lifehacks mají podpůrnou lištu s aktivním questem, nejbližším krokem a tlačítkem do quest logu. AI kontext přikládá přehled všech sekcí, quest logu i odměn; zaškrtnutí je ve výchozím stavu zapnuté.' },
     { title: 'Odměny · spodní patro Klidný domov', text: 'Přes celou šířku aplikace dole přibylo patro odměn. Místo bodů je grounding odměna: klidný domov. Služba, postup i poznámka se ukládají automaticky a přenášejí v záloze; starší zálohy fungují dál.' },
     { title: 'Bydlení & investice do nemovitosti · první služba', text: 'Speciální služby vybírá tým aplikace. Spuštěná služba 01 vede po etapách Práce → Nájem → Investiční byt → Základ projektu vlastním progress barem. Další služby jsou připravované. Modal otevřete i z pravého panelu pod 06 Moje proč.' },
     { title: 'Průběh dne · klid místo bodů', text: 'Pod rutinou zůstává pět bodů: Probuzení, Snídaně, Oběd, Večeře a Spánek. Místo XP se ukazuje klidný domov a každý bod přidává klid. Staré záznamy XP zůstávají v datech i záloze, jen se nezobrazují.' },

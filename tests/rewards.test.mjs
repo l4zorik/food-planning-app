@@ -17,6 +17,8 @@ test('rewards default to the housing service on older data and repair partial tr
   ensureRewards(state)
   assert.equal(state.rewards.selectedService, 'housing')
   assert.deepEqual(Object.keys(state.rewards.tracks.housing.stages), ['work', 'rent', 'investment', 'foundation'])
+  assert.deepEqual(Object.keys(state.rewards.tracks.hygiene.stages), ['shower', 'nails', 'hair', 'shave', 'laundry'])
+  assert.deepEqual(Object.keys(state.rewards.tracks.transport.stages), ['licence', 'car', 'service', 'reliable'])
   assert.equal(rewardProgress(state.rewards.tracks.housing).percent, 0)
   state.rewards.tracks.housing.stages.work = true
   state.rewards.tracks.housing.note = 'Moje poznámka'
@@ -32,11 +34,12 @@ test('rewards default to the housing service on older data and repair partial tr
   assert.doesNotThrow(() => validateState(structuredClone(broken)))
 })
 
-test('the housing path is one team-selected service with four grounding stages', () => {
+test('five team-selected services each carry their own grounding stages', () => {
   assert.equal(rewardServices[0].id, 'housing')
-  assert.equal(rewardServices[0].status, 'active')
-  assert.ok(rewardServices.every(service => service.status === 'active' || service.status === 'planned'))
-  assert.ok(rewardServices.filter(service => service.status === 'planned').length >= 1)
+  assert.deepEqual(rewardServices.map(service => service.id), ['housing', 'hygiene', 'fitness', 'dating', 'transport'])
+  assert.deepEqual(rewardServices.map(service => service.number), ['01', '02', '03', '04', '05'])
+  assert.ok(rewardServices.every(service => service.status === 'active'))
+  assert.ok(rewardServices.every(service => service.stages.length >= 4 && service.stages.every(stage => stage.id && stage.name && stage.text)))
   assert.deepEqual(housingStages.map(stage => stage.id), ['work', 'rent', 'investment', 'foundation'])
   assert.deepEqual(rewardProgress({ stages: { work: true, rent: true } }), { done: 2, total: 4, percent: 50 })
   assert.equal(rewardProgress(undefined).done, 0)
@@ -56,7 +59,17 @@ test('bottom floor and reward dialog show the path, save stages and reach the ca
   assert.equal($('reward-dialog').open, true)
   assert.equal($('reward-services').children.length, rewardServices.length)
   assert.equal($('reward-services').children[0].getAttribute('aria-pressed'), 'true')
-  assert.equal($('reward-services').children[1].disabled, true)
+  assert.equal($('reward-services').children[1].disabled, false)
+  assert.equal($('reward-service-count').children[0].textContent, '5')
+  // Every service keeps its own track: switching to Hygiena shows its five stages.
+  $('reward-services').children[1].emit('click')
+  assert.equal(state.rewards.selectedService, 'hygiene')
+  assert.equal($('reward-stages').children.length, 5)
+  assert.equal($('rewards-floor-name').textContent, 'Hygiena & péče o sebe')
+  assert.equal($('reward-progress-label').textContent, '0/5 etap · 0 % k upravené a čisté hygieně')
+  assert.equal($('reward-services').children[1].getAttribute('aria-pressed'), 'true')
+  $('reward-services').children[0].emit('click')
+  assert.equal(state.rewards.selectedService, 'housing')
   assert.equal($('reward-stages').children.length, housingStages.length)
   assert.equal($('reward-progress-label').textContent, '0/4 etap · 0 % k prvnímu investičnímu bytu')
   assert.equal($('reward-calm-state').hidden, true)

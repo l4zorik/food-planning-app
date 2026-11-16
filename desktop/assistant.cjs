@@ -10,9 +10,35 @@ function localEndpoint(value = 'http://127.0.0.1:11434') {
   if (url.protocol !== 'http:' || !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname) || url.username || url.password || url.search || url.hash || url.pathname !== '/') throw Error('Lokální model musí běžet na localhostu bez další cesty.')
   return url.origin
 }
+function questSteps(state, quest) {
+  const source = quest.sourceIndex === null ? [] : (state.cheats?.slots[quest.sourceIndex]?.workflows || []).flatMap(workflow => workflow.steps)
+  return [...source, ...(quest.steps || [])]
+}
 function summarizeProject(state) {
-  const active = state.lifeFocus?.quests.find(quest => quest.id === state.lifeFocus.activeId)
-  return JSON.stringify({ modules: (state.perks?.modules || []).map(module => ({ name: module.name, problem: module.problem, solution: module.solution })), activeFocus: active ? { title: active.title, why: active.why, meaning: active.meaning } : null, problems: (state.cheats?.slots || []).filter(slot => slot.problem).map(slot => slot.problem.name) }).slice(0, 20000)
+  const focus = state.lifeFocus
+  const active = focus?.quests.find(quest => quest.id === focus.activeId)
+  const base = (state.perks?.modules || []).find(module => module.templateId === 'mind') || null
+  const shopping = Object.entries(state.ingredients || {})
+  const keeps = state.keeps || []
+  const quests = (focus?.quests || []).map(quest => {
+    const steps = questSteps(state, quest)
+    return { title: quest.title, active: quest.id === focus.activeId, meanings: quest.meaningTags, done: steps.filter(step => step.done).length, total: steps.length, next: steps.find(step => !step.done)?.text || null }
+  })
+  return JSON.stringify({
+    sections: {
+      wellbeing: base ? { reflection: base.reflection, intention: base.solution } : null,
+      week: state.meals || {},
+      shopping: { total: shopping.length, left: shopping.filter(([, done]) => !done).map(([name]) => name) },
+      keeps: { total: keeps.length, groups: [...new Set(keeps.map(keep => keep.group).filter(Boolean))], latest: keeps.slice(0, 5).map(keep => keep.title) },
+      erp: 'Sekce 04 ERP je připravený firemní prostor; samostatná data se zatím neukládají.',
+      management: (state.management?.detox || []).filter(slot => slot.active || slot.problem || slot.strategy).map(slot => ({ problem: slot.problem, strategy: slot.strategy, routineDone: (slot.routine || []).filter(item => item.done).length, routineTotal: (slot.routine || []).length })),
+      lifehacks: (state.cheats?.slots || []).filter(slot => slot.problem || slot.workflows.length || slot.notes).map(slot => ({ problem: slot.problem?.name || null, workflows: slot.workflows.length, notes: slot.notes })),
+    },
+    questLog: { active: active?.title || null, quests },
+    rewards: { service: state.rewards?.selectedService || 'housing', stages: state.rewards?.tracks?.[state.rewards?.selectedService || 'housing']?.stages || {}, note: state.rewards?.tracks?.[state.rewards?.selectedService || 'housing']?.note || '' },
+    modules: (state.perks?.modules || []).map(module => ({ name: module.name, problem: module.problem, solution: module.solution })),
+    subscription: state.subscription?.preferredPlan || 'free',
+  }).slice(0, 20000)
 }
 class AssistantService {
   constructor(directory, { secureStorage, fetchImpl = fetch } = {}) { this.filename = path.join(directory, 'assistant', 'connections.json'); this.secureStorage = secureStorage; this.fetch = fetchImpl; this.busy = new Set() }

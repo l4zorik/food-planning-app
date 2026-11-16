@@ -1,3 +1,5 @@
+// Quest log, meanings of focus and the thread that ties 04 · 06 · 07 together.
+import { ensureRewards, selectedRewardProgress } from './rewards.js'
 export const focusCheckpoints = [
   { id: 'start', icon: '🌱', name: 'Začátek cesty', threshold: 0 }, { id: 'direction', icon: '🧭', name: 'Nalezený směr', threshold: 25 },
   { id: 'momentum', icon: '🔥', name: 'Vlastní rytmus', threshold: 50 }, { id: 'summit', icon: '🏔️', name: 'Blízko vrcholu', threshold: 75 }, { id: 'complete', icon: '🏆', name: 'Uzavřený okruh', threshold: 100 },
@@ -28,6 +30,35 @@ export function ensureLifeFocus(state) {
   return state.lifeFocus
 }
 export function createLifeQuest(title, why = '', sourceIndex = null) { return { id: crypto.randomUUID(), title, why, sourceIndex, meaning: 'money', meaningTags: [...defaultFocusMeaningTags], steps: [], createdAt: new Date().toISOString() } }
+// One-time seed of the current priorities: shifts and the project missions.
+export function seedQuestLog(state) {
+  const focus = ensureLifeFocus(state)
+  if (Number.isInteger(focus.seedVersion) && focus.seedVersion >= 1) return focus
+  focus.seedVersion = 1
+  const addQuest = (title, why, texts) => {
+    if (focus.quests.some(quest => quest.title === title)) return null
+    const quest = createLifeQuest(title, why)
+    quest.steps = texts.map(text => ({ id: crypto.randomUUID(), text, done: false }))
+    focus.quests.push(quest)
+    return quest
+  }
+  const shifts = addQuest('Směny 12h · 16.–22.11.', 'Priorita č. 1: směny a volno drží rytmus týdne.', [
+    'Noční směna 12h · pondělí 16.11.',
+    'Noční směna 12h · úterý 17.11.',
+    'Volno · středa 18.11. a čtvrtek 19.11.',
+    'Ranní směna 12h · pátek 20.11.',
+    'Ranní směna 12h · sobota 21.11.',
+    'Ranní směna 12h · neděle 22.11.',
+  ])
+  addQuest('Mise projektu', 'Priorita č. 2: další mise projektu od IČO po zisk.', [
+    'Vyřídit IČO',
+    'Business · další mise',
+    'Scale tržby',
+    'Maximize profit',
+  ])
+  if (!focus.activeId && shifts) focus.activeId = shifts.id
+  return focus
+}
 export function lifeQuestSteps(state, quest) {
   const source = quest.sourceIndex === null ? [] : (state.cheats?.slots[quest.sourceIndex]?.workflows || []).flatMap(workflow => workflow.steps)
   return [...source, ...quest.steps]
@@ -71,6 +102,33 @@ export function setupLifeFocus({ getState, save, onSourceChange = () => {} }) {
       const button = focusNode('button', checkpoint.icon); button.type = 'button'; button.title = `${checkpoint.name} · ${checkpoint.threshold} %`
       button.setAttribute('aria-label', `Otevřít checkpoint: ${checkpoint.name}`); button.classList.toggle('is-reached', progress.percent >= checkpoint.threshold)
       button.addEventListener('click', () => { openMap(); renderCheckpoint(checkpoint) }); $('life-checkpoints').append(button)
+    }
+    renderThreads(value, quest)
+    renderSupport(value, quest)
+  }
+  function questProgress(value, quest) {
+    if (!quest) return { done: 0, total: 0 }
+    const steps = lifeQuestSteps(value, quest)
+    return { done: steps.filter(step => step.done).length, total: steps.length }
+  }
+  function renderThreads(value, quest) {
+    const reward = selectedRewardProgress(value), progress = questProgress(value, quest)
+    const questText = quest ? `${quest.title} · ${progress.done}/${progress.total} kroků` : 'Zatím žádný aktivní quest'
+    const meaningText = questMeaningTags(quest, value.lifeFocus).map(id => focusMeanings.find(item => item.id === id)).filter(Boolean).map(item => `${item.icon} ${item.name}`).join(' + ')
+    $('quest-thread-04-quest').textContent = questText
+    $('quest-thread-06-meaning').textContent = meaningText
+    $('quest-thread-07-reward').textContent = `${reward.service.icon} ${reward.service.name} · ${reward.percent} %`
+  }
+  function renderSupport(value, quest) {
+    const progress = questProgress(value, quest)
+    const next = quest && lifeQuestSteps(value, quest).find(step => !step.done)
+    for (const section of ['home', 'week', 'shopping', 'keeps', 'erp', 'management', 'cheats']) {
+      const box = $(`quest-support-${section}`)
+      const title = focusNode('strong', quest ? `🧭 ${quest.title}` : '🧭 Quest log čeká na první quest', 'quest-support-title')
+      const detail = focusNode('small', quest ? `${progress.done}/${progress.total} kroků · ${next ? `nejbližší: ${next.text}` : 'všechny kroky hotové'}` : 'Otevři quest log a založ vlastní směr.', 'quest-support-detail')
+      const open = focusNode('button', 'Otevřít quest log ↗'); open.type = 'button'
+      open.addEventListener('click', openMap)
+      box.replaceChildren(title, detail, open)
     }
   }
   function renderCheckpoint(checkpoint) {
@@ -123,7 +181,7 @@ export function setupLifeFocus({ getState, save, onSourceChange = () => {} }) {
     $(id).addEventListener('change', () => setMeaningFilter($(id).value))
   }
   $('life-focus-select').addEventListener('change', () => activate($('life-focus-select').value))
-  $('focus-meaning-open').addEventListener('click', () => {
+  function openMeaning() {
     selectedMeaningTags = questMeaningTags(active(), state().lifeFocus)
     $('focus-meaning-apply').disabled = !selectedMeaningTags.length
     const list = $('focus-meaning-grid'); list.replaceChildren()
@@ -139,7 +197,10 @@ export function setupLifeFocus({ getState, save, onSourceChange = () => {} }) {
       list.append(button)
     }
     $('focus-meaning-dialog').showModal()
-  })
+  }
+  $('focus-meaning-open').addEventListener('click', openMeaning)
+  for (const id of ['thread-meaning-04', 'thread-meaning-07']) $(id).addEventListener('click', openMeaning)
+  for (const id of ['thread-quest-06', 'thread-quest-07']) $(id).addEventListener('click', openMap)
   $('focus-meaning-apply').addEventListener('click', () => {
     if (!selectedMeaningTags.length) return
     const quest = active()

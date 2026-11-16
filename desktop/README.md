@@ -87,9 +87,19 @@ Tagy propojují postupy i problémy mezi jednotlivými sloty. Každý slot můž
 
 Přes celou šířku aplikace pod pracovní plochou je spodní patro **07 · Odměny**. Místo bodů je grounding odměna **Klidný domov**; službu, etapy, progress bar i poznámku vidíte bez otevírání čehokoliv dalšího.
 
-Speciální služby vybírá tým aplikace. Spuštěná služba **01 Bydlení & investice do nemovitosti** vede po čtyřech etapách: **Práce → Nájem → Investiční byt → Základ projektu**, každá s vlastní rolí cesty. Ostatní služby jsou označené jako připravované.
+Speciální služby vybírá tým aplikace, spuštěných je pět. **01 Bydlení & investice do nemovitosti** vede po čtyřech etapách: **Práce → Nájem → Investiční byt → Základ projektu**, každá s vlastní rolí cesty. Dále běží **02 Hygiena & péče o sebe** (sprcha, stříhání nehtů a vlasů, holení tváře, praní prádla), **03 Cvičení**, **04 Seznamování & rodina** a **05 Přeprava & auto**. Každá služba má vlastní etapy, progress bar i klidový stav; v modalu službu přepínáte a vybraná se ukládá.
 
 Tlačítkem **Otevřít odměny** se otevře modal s výběrem služeb, etapami s zaškrtáváním, stavem **Klidný domov** po poslední etapě a vlastní poznámkou k cestě. Stejný modal otevřete i z pravého panelu pod **06 Moje proč**. Výběr služby, etapy i poznámka se ukládají automaticky, jsou součástí zálohy a starší zálohy bez nich fungují dál.
+
+## Quest log · vlákno 04 ↔ 06 ↔ 07 a podpora sekcí
+
+Quest log se při prvním spuštění jednou doplní prioritami (guard `seedVersion`): směny 16.–22.11. a mise projektu (IČO, business, scale tržby, maximize profit). Existující questy se nikdy nepřepíšou a aktivní fokus se nemění, pokud už je vybraný.
+
+Vlákno spojuje **04 Quest log**, **06 Moje proč** a **07 Odměny** společnou řádkou: každý roh ukazuje svůj stav (aktivní quest a kroky, smysly, vybranou službu a procento) a tlačítky otevře zbývající dva rohy.
+
+Každá ze sedmi sekcí (Psychická pohoda, Týdenní plán, Nákupní seznam, Keeps & poznámky, ERP, Management, Cheats & Lifehacks) obsahuje podpůrnou lištu s aktivním questem, počtem kroků, nejbližším krokem a tlačítkem do quest logu.
+
+AI asistent umí přiložit přehled všech sedmi sekcí, quest logu i odměn; zaškrtnutí je ve výchozím stavu zapnuté.
 
 ## Pravý panel · Moje perky
 

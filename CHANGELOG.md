@@ -1,3 +1,11 @@
+## 2026-11-16 · Pět služeb odměn, vlákno quest logu a podpora všech sekcí
+
+- Katalog odměn rozšířen na pět spuštěných služeb: 01 Bydlení & investice, 02 Hygiena & péče o sebe (sprcha, nehty, vlasy, holení, praní prádla), 03 Cvičení, 04 Seznamování & rodina, 05 Přeprava & auto. Každá služba má vlastní etapy, progress bar i klidový stav; výběr služby se ukládá automaticky.
+- Quest log se při prvním spuštění jednou doplní aktuálními prioritami: směny 16.–22.11. (noční, volno, ranní) a mise projektu (IČO, business, scale tržby, maximize profit). Existující questy se nikdy nepřepíšou.
+- Vlákno 04 Quest log ↔ 06 Moje proč ↔ 07 Odměny: každý roh ukazuje společnou řádku a odkazy na další dva.
+- Všech sedm sekcí (Psychická pohoda, Týdenní plán, Nákupní seznam, Keeps, ERP, Management, Cheats) obsahuje podpůrnou lištu s aktivním questem, nejbližším krokem a tlačítkem do quest logu.
+- AI kontext pokrývá všech sedm sekcí, quest log i odměny; zaškrtnutí „Přiložit přehled" je ve výchozím stavu zapnuté.
+
 ## 2026-11-16 · Odměny: spodní patro Klidný domov
 
 - Nové spodní patro přes celou šířku aplikace: grounding odměny místo bodů, výchozí stav se doplní i ve starších datech.

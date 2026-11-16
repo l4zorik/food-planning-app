@@ -7,7 +7,7 @@ import { applyKeepStyle, renderRichText } from './keep-style.js'
 import { setupManagement } from './management.js'
 import { setupLifehacks } from './lifehacks.js'
 import { setupPerks } from './perks.js'
-import { setupLifeFocus } from './life-focus.js'
+import { setupLifeFocus, seedQuestLog } from './life-focus.js'
 import { setupProjectAssistant } from './project-assistant.js'
 import { setupSubscriptions } from './subscriptions.js'
 import { setupRewards } from './rewards.js'
@@ -231,7 +231,7 @@ $('export-backup').addEventListener('click', async () => {
 $('restore-backup').addEventListener('click', async () => {
   try {
     if (ready) await flush()
-    if (await api.importBackup()) { keepActions.close(); const loaded = await api.load(); state = loaded.state; ready = true; renderAll(); error(''); status('Záloha obnovena') }
+    if (await api.importBackup()) { keepActions.close(); const loaded = await api.load(); state = loaded.state; seedQuestLog(state); ready = true; renderAll(); error(''); status('Záloha obnovena') }
   } catch (e) { error(e.message) }
 })
 $('save-pdf').addEventListener('click', async () => { try { await flush(); await api.savePdf() } catch (e) { error(e.message) } })
@@ -242,7 +242,11 @@ if (!api) { error('Tuto aplikaci spusť pomocí Electronu, ne jako běžnou webo
 else {
   api.onClosing(async () => { try { if (ready) await flush(); await api.close() } catch (e) { error(e.message); status('Uložení selhalo, okno zůstává otevřené') } })
   try {
-    const loaded = await api.load(); state = loaded.state; $('data-directory').textContent = loaded.directory; ready = true; renderAll(); selectView('home'); status('Uloženo v PC')
+    const loaded = await api.load(); state = loaded.state; $('data-directory').textContent = loaded.directory; ready = true
+    const beforeSeed = JSON.stringify(state.lifeFocus || null)
+    seedQuestLog(state)
+    renderAll(); selectView('home'); status('Uloženo v PC')
+    if (JSON.stringify(state.lifeFocus) !== beforeSeed) void flush().catch(() => {})
     setInterval(applyTheme, 30000)
     window.addEventListener('focus', applyTheme)
   } catch (e) { error(e.message); status('Data nelze načíst') }

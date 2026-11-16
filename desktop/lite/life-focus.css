@@ -5,3 +5,20 @@
 @media(max-width:620px){.focus-meaning-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.quest-map-dialog .problem-picker-header{padding:14px}.quest-map-dialog .problem-picker-top .problem-library-mark{display:none}.quest-map-dialog .problem-picker-header>p{font-size:10px}}
 @media print{.life-focus-hub,.assistant-hub,.focus-meaning-hub,.quest-map-dialog,.assistant-model-dialog{display:none!important}}
 .quest-meaning-tags{display:flex;flex-wrap:wrap;gap:5px;margin:12px 0}.quest-meaning-tags button{font-size:9px;padding:5px 8px;max-width:100%;overflow-wrap:anywhere}.quest-node-tags{grid-column:1/-1;line-height:1.8}.quest-map-toolbar select{max-width:240px;font-size:11px}.focus-meaning-grid+.primary{width:100%;margin-top:20px}.assistant-messages{max-height:340px;overflow:auto;display:grid;gap:9px;margin-top:16px}.assistant-message{border:1px solid var(--border);border-radius:9px;background:var(--background);padding:10px}.assistant-message strong{font-size:9px;color:var(--muted-foreground)}.assistant-message p{font-size:11px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;margin:7px 0 0}.assistant-message.assistant{background:var(--accent)}.assistant-context{display:flex;align-items:start;gap:6px;font-size:9px;line-height:1.7;color:var(--muted-foreground);margin-top:8px}.assistant-context input{flex:none;accent-color:var(--primary);margin-top:3px}#assistant-chat-status{font-size:10px;line-height:1.7;color:var(--muted-foreground)}.subscription-dialog .problem-picker-top h2{font-size:20px;flex:1;margin:0}.subscription-dialog .problem-picker-header>p{font-size:12px;line-height:1.8;color:var(--muted-foreground)}.subscription-plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:12px 0 25px}.subscription-plan{border:1px solid var(--border);border-radius:14px;padding:22px;background:var(--background);display:flex;flex-direction:column;align-items:start}.subscription-plan h3{font-size:22px;line-height:1.4}.subscription-plan p{font-size:12px;color:var(--primary);line-height:1.7}.subscription-plan ul{padding-left:17px;font-size:12px;line-height:2;color:var(--muted-foreground)}.subscription-plan button{font-size:12px;margin-top:auto}.subscription-plan button[aria-pressed=true]{background:var(--primary);color:var(--primary-foreground)}@media(max-width:760px){.subscription-plans{grid-template-columns:1fr}.quest-map-toolbar select{max-width:100%}}
+
+/* Quest thread · one shared line across 04, 06 and 07. */
+.quest-thread{display:grid;gap:8px;border-top:1px solid var(--border);margin-top:14px;padding-top:12px}
+.life-focus-hub .quest-thread{border-color:#5d593f}
+.quest-thread-chain{display:grid;gap:3px;margin:0;font-size:10px;line-height:1.7;color:var(--muted-foreground)}
+.life-focus-hub .quest-thread-chain{color:#bfb797}
+.quest-thread-chain strong{font-size:8px;letter-spacing:1.2px;color:var(--primary)}
+.life-focus-hub .quest-thread-chain strong{color:#baaa7e}
+.quest-thread-chain span{overflow-wrap:anywhere}
+.quest-thread-links{display:flex;gap:8px;flex-wrap:wrap}
+.quest-thread-links button{font-size:10px;padding:7px 10px}
+/* Quest support · the quest log line present in every section. */
+.quest-support{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;border:1px dashed var(--border);border-radius:12px;padding:11px 16px;background:var(--accent);margin:14px 0}
+.quest-support .quest-support-title{font-size:12px;line-height:1.6}
+.quest-support .quest-support-detail{font-size:10px;line-height:1.7;color:var(--muted-foreground);flex:1;min-width:200px}
+.quest-support button{font-size:10px;padding:7px 12px;margin-left:auto;background:var(--card)}
+@media print{.quest-thread,.quest-support{display:none!important}}
