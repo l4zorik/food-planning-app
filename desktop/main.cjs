@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol, ipcMain, dialog, session, nativeImage } = require('electron')
+const { app, BrowserWindow, protocol, ipcMain, dialog, session, nativeImage, safeStorage } = require('electron')
 const fs = require('node:fs/promises')
 const { createReadStream } = require('node:fs')
 const { Readable } = require('node:stream')
@@ -6,6 +6,7 @@ const path = require('node:path')
 const { DataStore, mediaPattern, mimeTypes, backupFilename } = require('./store.cjs')
 const { startupId, reportStartup, prepareWindow } = require('./startup.cjs')
 const { Branding } = require('./branding.cjs')
+const { AssistantService } = require('./assistant.cjs')
 const startupDirectory = path.resolve(__dirname, '../.runtime')
 const pendingStarts = new Set([startupId(process.argv)].filter(Boolean))
 let rendererReady = false
@@ -129,6 +130,7 @@ else {
   app.whenReady().then(async () => {
     branding = new Branding(app.getPath('userData'))
     store = new DataStore(path.join(app.getPath('userData'), 'personal-data'))
+    const assistant = new AssistantService(app.getPath('userData'), { secureStorage: safeStorage })
     await store.init()
     protocol.handle('mealmedia', serveMedia)
     protocol.handle('mealapp', async request => {
@@ -179,6 +181,8 @@ else {
       return branding.save(name, png)
     })
     handle('data:save', state => store.save(state))
+    handle('assistant:configure', input => assistant.configure(input))
+    handle('assistant:chat', async input => { await store.queue; return assistant.chat(input, await store.load()) })
     handle('media:import', async () => {
       const result = await dialog.showOpenDialog(window, { properties: ['openFile'], filters: [{ name: 'Photos, GIFs and videos', extensions: ['png','jpg','jpeg','gif','webp','mp4','webm'] }] })
       if (result.canceled) return null

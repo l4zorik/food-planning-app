@@ -8,7 +8,7 @@ Dvojklik na **Start-Lite.vbs** spustí aplikaci bez terminálu, s úvodním loge
 
 Spouštění používá jedinou úvodní obrazovku přímo v Electronu. Hlavní okno se zobrazí až po načtení dat a prvním vykreslení; úvodní obrazovka se předtím automaticky odstraní. Skrytý PowerShell spouštěč už nevytváří další okno.
 
-Při každém startu se otevře přehled **Co je nového**. V něm rozbalte **Vaše firma, vaše logo** a zadejte název firmy nebo vyberte PNG/JPEG. Značka se uloží lokálně a použije se i na úvodní obrazovce dalšího spuštění. Přehled lze zavřít tlačítkem **Pojďme plánovat**, křížkem nebo Escape a znovu otevřít z hlavičky. [Úplný seznam změn](CHANGELOG.md).
+Po spuštění se všem otevře hlavní obrazovka **Psychická pohoda**, základní baterie projektu. Přehled **Co je nového** otevřete tlačítkem v hlavičce. V něm rozbalte **Vaše firma, vaše logo** a zadejte název firmy nebo vyberte PNG/JPEG. Značka se uloží lokálně a použije se i na úvodní obrazovce dalšího spuštění. Přehled lze zavřít tlačítkem **Zpět do mého prostoru**, křížkem nebo Escape a znovu otevřít z hlavičky. [Úplný seznam změn](CHANGELOG.md).
 
 ## Kde je aplikace ke stažení / instalaci
 
@@ -48,6 +48,14 @@ Kliknutí na tag otevře odpovídající workflow. Společné tagy také zobraz�
 
 Pro obecný postup u ztráty bydlení a hledání práce byly ověřeny informace veřejných institucí: [MPSV – místní sociální služby a sociální pracovníci](https://mpsv.gov.cz/pro-klienty-/-pecujici-osoby), [MPSV – pracovní a rekvalifikační poradenství](https://mpsv.gov.cz/mam-praci-studenti-ostatni-poradenstvi). Konkrétní podmínky služby se ověřují přímo u jejího poskytovatele.
 
+Pod oběma pravými kartami **Tvůj prostor / Jen u tebe** je nový prostor **Moje perky**. Začíná modulem **Psychická pohoda**; tlačítko **Přidat modul** otevře výběr sedmi směrů: Psychická pohoda, Finanční svoboda, Časová svoboda, Lokalizační pohoda, Politická pohoda, Látková pohoda a Skill pohoda. Lze přidávat i vlastní moduly a více modulů stejného směru, bez pevného počtu.
+
+Tři propojené modaly vedou od **způsobů hledání** přes **nalezené problémy a pozorování** k **výsledným modulům**. Deset metod nabízí konkrétní otázky; hledání lze přeskočit a poznatek nemusí být problém ani úkol. Záznam má vlastní pozorování, tagy a stav **K ověření / Potvrzeno pozorováním / Teď neřeším / Nepotvrdilo se**. Může zůstat nepropojený nebo souviset s více moduly. Z otevřeného modulu jej připojíte tlačítkem **Připojit pozorování**.
+
+Každý perk má vlastní souvislosti a poznámky, výchozí situaci, řešení, upravitelný checklist workflow a dokumentaci technického postupu. Návrh automatizace obsahuje spouštěč, vstupy, kroky, výstupy a hranice; jde o uloženou přípravu pro vyšší verzi, nikoliv spouštění automatických akcí. Nové chyby, poznatky a otevřené otázky nemají pevný počet. **Skill pohoda** označuje tuto část jako nápady na budoucí aktualizace softwaru. Moduly, pozorování, dokumentace i návrhy se ukládají automaticky a přenášejí v záloze; starší zálohy zůstávají podporované.
+
+**Psychická pohoda je výchozí hlavní obrazovka pro všechny**, také po načtení starších dat. Základní modul se doplní, pokud chybí; existující zápisy ani další moduly se nepřepisují. Pole **Co už je v pořádku a co chci zachovat?** a **Čemu chci dát prostor?** sdílejí přímo souvislosti a řešení základního modulu. Hlavní obrazovka nabízí další perky a odkazy na všech šest nástrojových sekcí. Domů se vrátíte prvním tlačítkem **Psychická pohoda** v navigaci. Symbol baterie je označením základu projektu, bez hodnocení psychického stavu. Novinky se otevírají ručně z hlavičky.
+
 ## Vytvořit Windows EXE
 
 S přístupem k internetu a Node.js:
@@ -61,10 +69,10 @@ Výsledky úspěšného sestavení: `release/My-Meal-Planner-Lite-Setup-0.3.0.ex
 ## Ověření
 
 ```powershell
-node --experimental-strip-types --test tests/themes.test.mjs tests/desktop-store.test.cjs tests/desktop-startup.test.cjs tests/keep-order.test.mjs tests/keep-actions.test.mjs tests/keep-style.test.mjs tests/keep-drag.test.mjs tests/management.test.mjs tests/problem-picker.test.mjs tests/strategy-routine.test.mjs tests/modal-favorites.test.mjs tests/lifehacks.test.mjs
+node --experimental-strip-types --test tests/themes.test.mjs tests/desktop-store.test.cjs tests/desktop-startup.test.cjs tests/keep-order.test.mjs tests/keep-actions.test.mjs tests/keep-style.test.mjs tests/keep-drag.test.mjs tests/management.test.mjs tests/problem-picker.test.mjs tests/strategy-routine.test.mjs tests/modal-favorites.test.mjs tests/lifehacks.test.mjs tests/perks.test.mjs tests/home.test.mjs
 ```
 
-52 automatických testů prošlo (včetně slotů Detoxu, nezávislé rutiny, ukládání a obnovy): ukládání, souběžné zápisy, přenos médií, obnova poškozených dat, motivy, startovací potvrzení, firemní značka, pořadí Keeps, velké poznámky, konverze checklistů, metadata a nabídka s editorem, formátování, kontrast barev a přesouvání s rolováním. Syntaktické kontroly desktopu prošly. Runtime 45.2.3 je připravený a přenosný ZIP sestavený. Pokus o spuštění v pracovním prostředí stále skončil pádem GPU podprocesu `0xC0000135` a rendereru `launch-failed` (49). Funkční GUI ani PDF zde tedy zatím nejsou potvrzené. Spouštěč ukládá podrobnosti do `.runtime/startup-error.log`; sandbox a webSecurity zůstávají zapnuté.
+62 automatických testů prošlo (včetně slotů Detoxu, nezávislé rutiny, ukládání a obnovy): ukládání, souběžné zápisy, přenos médií, obnova poškozených dat, motivy, startovací potvrzení, firemní značka, pořadí Keeps, velké poznámky, konverze checklistů, metadata a nabídka s editorem, formátování, kontrast barev a přesouvání s rolováním. Syntaktické kontroly desktopu prošly. Runtime 45.2.3 je připravený a přenosný ZIP sestavený. Pokus o spuštění v pracovním prostředí stále skončil pádem GPU podprocesu `0xC0000135` a rendereru `launch-failed` (49). Funkční GUI ani PDF zde tedy zatím nejsou potvrzené. Spouštěč ukládá podrobnosti do `.runtime/startup-error.log`; sandbox a webSecurity zůstávají zapnuté.
 
 ## Webový základ
 

@@ -2,7 +2,7 @@ const fs = require('node:fs/promises')
 const path = require('node:path')
 const { createHash, randomUUID } = require('node:crypto')
 
-const allowedKeys = new Set(['meals', 'ingredients', 'notes', 'keeps', 'theme', 'discover', 'aiPlans', 'management', 'cheats'])
+const allowedKeys = new Set(['meals', 'ingredients', 'notes', 'keeps', 'theme', 'discover', 'aiPlans', 'management', 'cheats', 'perks', 'lifeFocus', 'projectAssistant', 'subscription'])
 const mediaPattern = /^[a-f0-9]{64}\.(png|jpg|gif|webp|mp4|webm)$/
 const mimeTypes = { png: 'image/png', jpg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', mp4: 'video/mp4', webm: 'video/webm' }
 
@@ -71,6 +71,51 @@ function validateState(state) {
       }
       if (new Set(slot.workflows.map(workflow => workflow.id)).size !== slot.workflows.length || new Set(slot.workflows.map(workflow => workflow.templateId)).size !== slot.workflows.length) throw Error('Duplicate Lifehacks workflow.')
     }
+  }
+  if (state.perks !== undefined) {
+    const p = state.perks
+    const record = value => value && typeof value === 'object' && !Array.isArray(value)
+    const strings = value => Array.isArray(value) && value.every(item => typeof item === 'string') && new Set(value).size === value.length
+    const uniqueIds = values => new Set(values.map(item => item.id)).size === values.length
+    if (!record(p) || !Array.isArray(p.modules) || !Array.isArray(p.findings)) throw Error('Invalid perks.')
+    for (const finding of p.findings) {
+      if (!record(finding) || !['id', 'name', 'evidence', 'createdAt'].every(key => typeof finding[key] === 'string') || !['assumption', 'confirmed', 'parked', 'disproved'].includes(finding.status) || !(finding.methodId === null || typeof finding.methodId === 'string') || !strings(finding.tags) || !Number.isFinite(Date.parse(finding.createdAt))) throw Error('Invalid perk finding.')
+    }
+    const findingIds = new Set(p.findings.map(item => item.id))
+    for (const module of p.modules) {
+      if (!record(module) || !['id', 'templateId', 'name', 'createdAt', 'reflection', 'problem', 'solution', 'documentation'].every(key => typeof module[key] === 'string') || !Number.isFinite(Date.parse(module.createdAt)) || !strings(module.findingIds) || !module.findingIds.every(id => findingIds.has(id))) throw Error('Invalid perk module.')
+      if (!Array.isArray(module.workflow) || !module.workflow.every(step => record(step) && typeof step.id === 'string' && typeof step.text === 'string' && typeof step.done === 'boolean') || !uniqueIds(module.workflow)) throw Error('Invalid perk workflow.')
+      if (!record(module.automation) || !['trigger', 'inputs', 'actions', 'outputs', 'boundaries'].every(key => typeof module.automation[key] === 'string')) throw Error('Invalid perk automation draft.')
+      if (!Array.isArray(module.issues) || !module.issues.every(issue => record(issue) && ['id', 'title', 'notes', 'createdAt'].every(key => typeof issue[key] === 'string') && typeof issue.done === 'boolean' && Number.isFinite(Date.parse(issue.createdAt))) || !uniqueIds(module.issues)) throw Error('Invalid perk issues.')
+    }
+    if (!uniqueIds(p.modules) || !uniqueIds(p.findings)) throw Error('Duplicate perk identity.')
+  }
+  if (state.lifeFocus !== undefined) {
+    const focus = state.lifeFocus
+    if (!focus || typeof focus !== 'object' || !Array.isArray(focus.quests) || !(focus.activeId === null || typeof focus.activeId === 'string')) throw Error('Invalid life focus.')
+    const validMeaning = value => value === undefined || value === null || ['money', 'love', 'family', 'friends', 'business', 'health', 'jesus-christ', 'god', 'ai'].includes(value)
+    const validMeaningTags = value => value === undefined || Array.isArray(value) && value.length > 0 && value.every(tag => typeof tag === 'string' && validMeaning(tag)) && new Set(value).size === value.length
+    if (!validMeaning(focus.defaultMeaning)) throw Error('Invalid focus meaning.')
+    if (!validMeaningTags(focus.defaultMeaningTags)) throw Error('Invalid default focus tags.')
+    for (const quest of focus.quests) {
+      if (!quest || !['id', 'title', 'why', 'createdAt'].every(key => typeof quest[key] === 'string') || !Number.isFinite(Date.parse(quest.createdAt)) || !(quest.sourceIndex === null || Number.isInteger(quest.sourceIndex) && quest.sourceIndex >= 0 && quest.sourceIndex < 20 && state.cheats?.slots[quest.sourceIndex])) throw Error('Invalid life quest.')
+      if (!validMeaning(quest.meaning)) throw Error('Invalid quest meaning.')
+      if (!validMeaningTags(quest.meaningTags)) throw Error('Invalid quest meaning tags.')
+      if (!Array.isArray(quest.steps) || !quest.steps.every(step => step && typeof step.id === 'string' && typeof step.text === 'string' && typeof step.done === 'boolean') || new Set(quest.steps.map(step => step.id)).size !== quest.steps.length) throw Error('Invalid life quest steps.')
+    }
+    if (new Set(focus.quests.map(quest => quest.id)).size !== focus.quests.length || focus.activeId !== null && !focus.quests.some(quest => quest.id === focus.activeId)) throw Error('Invalid active life quest.')
+  }
+  if (state.projectAssistant !== undefined) {
+    const assistant = state.projectAssistant
+    if (!assistant || typeof assistant !== 'object' || !Array.isArray(assistant.profiles) || !Array.isArray(assistant.drafts) || !(assistant.selectedId === null || typeof assistant.selectedId === 'string')) throw Error('Invalid project assistant.')
+    if (!assistant.profiles.every(profile => profile && ['id', 'name', 'modelId'].every(key => typeof profile[key] === 'string') && ['openai', 'local', 'custom'].includes(profile.provider)) || new Set(assistant.profiles.map(profile => profile.id)).size !== assistant.profiles.length) throw Error('Invalid model profiles.')
+    const ids = new Set(assistant.profiles.map(profile => profile.id))
+    if (assistant.selectedId !== null && !ids.has(assistant.selectedId) || !assistant.drafts.every(draft => draft && typeof draft.id === 'string' && typeof draft.text === 'string' && Number.isFinite(Date.parse(draft.createdAt)) && (draft.profileId === null || ids.has(draft.profileId))) || new Set(assistant.drafts.map(draft => draft.id)).size !== assistant.drafts.length) throw Error('Invalid assistant drafts.')
+    if (assistant.messages !== undefined && (!Array.isArray(assistant.messages) || !assistant.messages.every(message => message && typeof message.id === 'string' && ids.has(message.profileId) && ['user', 'assistant'].includes(message.role) && typeof message.text === 'string' && Number.isFinite(Date.parse(message.createdAt))) || new Set(assistant.messages.map(message => message.id)).size !== assistant.messages.length)) throw Error('Invalid assistant messages.')
+  }
+  if (state.subscription !== undefined) {
+    const s = state.subscription
+    if (!s || typeof s !== 'object' || !['free', 'plus', 'studio'].includes(s.preferredPlan) || s.cycle !== 'monthly' || s.activePlan !== 'free' || s.paymentStatus !== 'not-connected') throw Error('Invalid subscription preparation. Paid entitlements require a connected billing backend.')
   }
   if (state.theme !== undefined) {
     const t = state.theme

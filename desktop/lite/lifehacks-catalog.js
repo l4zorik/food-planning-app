@@ -87,7 +87,6 @@ export function parseLifehackTags(value) { return [...new Set(value.split(',').m
 export function addLifehackWorkflow(slot, template, createId = () => crypto.randomUUID()) {
   if (slot.workflows.some(workflow => workflow.templateId === template.id)) return false
   if (!slot.problem) slot.problem = { id: template.id, name: template.problem, tags: [...template.tags] }
-  slot.active = true
   slot.workflows.push({ id: createId(), templateId: template.id, name: template.name, purpose: template.purpose, tags: [...template.tags], steps: template.steps.map(text => ({ id: createId(), text, done: false })) })
   return true
 }

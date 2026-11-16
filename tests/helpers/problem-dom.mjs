@@ -7,7 +7,7 @@ export function problemDocument() {
     append(...nodes) { for (const node of nodes) { node.parentElement = this; this.children.push(node) } }
     replaceChildren(...nodes) { for (const child of this.children) child.isConnected = false; this.children = []; this.append(...nodes) }
     addEventListener(name, callback) { (this.listeners[name] ??= []).push(callback) }
-    emit(name, values = {}) { for (const callback of this.listeners[name] || []) callback({ preventDefault() {}, target: this, ...values }) }
+    emit(name, values = {}) { const results = (this.listeners[name] || []).map(callback => callback({ preventDefault() {}, target: this, ...values })); if (results.some(result => result?.then)) return Promise.all(results) }
     setAttribute(name, value) { this.attributes[name] = value }
     getAttribute(name) { return this.attributes[name] }
     focus() { document.activeElement = this }

@@ -12,7 +12,7 @@ Get-ChildItem -LiteralPath $runtime | Copy-Item -Destination $destination -Recur
 Rename-Item -LiteralPath (Join-Path $destination 'electron.exe') -NewName 'MealPlanner.exe'
 $appRoot = Join-Path $destination 'resources/app'
 New-Item -ItemType Directory -Path $appRoot -Force | Out-Null
-foreach ($file in @('main.cjs', 'preload.cjs', 'store.cjs', 'startup.cjs', 'branding.cjs', 'package.json', 'lite')) {
+foreach ($file in @('main.cjs', 'preload.cjs', 'store.cjs', 'startup.cjs', 'branding.cjs', 'assistant.cjs', 'package.json', 'lite')) {
     Copy-Item -LiteralPath (Join-Path $projectRoot "desktop/$file") -Destination $appRoot -Recurse
 }
 @'

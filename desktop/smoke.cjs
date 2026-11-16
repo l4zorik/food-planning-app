@@ -20,9 +20,9 @@ app.on('browser-window-created', (_event, window) => {
       const result = await window.webContents.executeJavaScript(`(async () => {
         const wait = async check => { for (let n = 0; n < 100; n++) { if (check()) return; await new Promise(resolve => setTimeout(resolve, 50)); } throw Error('Renderer did not become ready'); };
         await wait(() => document.getElementById('save-status').textContent.includes('Uloženo'));
-        await wait(() => document.getElementById('updates-dialog').open);
+        if (document.getElementById('home').hidden || !document.getElementById('week').hidden) throw Error('Psychological wellbeing is not the startup home');
+        if (document.getElementById('updates-dialog').open) throw Error('Updates covered the startup home');
         if (!document.getElementById('release-version').textContent) throw Error('Missing release version');
-        document.getElementById('continue-startup').click();
         document.getElementById('open-updates').click();
         if (!document.getElementById('updates-dialog').open) throw Error('Update log cannot be reopened');
         document.getElementById('close-updates').click();

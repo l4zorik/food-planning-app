@@ -12,7 +12,7 @@ Z kořene projektu otevřete **Start-Lite.vbs** (bez terminálu), případně pr
 
 Spouštěč použije nainstalovaný Electron nebo ověřený lokální archiv stejné verze jako v manifestu (45.2.3). Starý runtime 39.8.10 už automaticky nepoužívá. Hash cache v `scripts/runtime-hashes.json` je místně zjištěná integrita, nikoli nezávislé ověření od vydavatele. Potvrzení načtení rozhraní nahrazuje kontrolu titulku okna a původní desetisekundový limit. Chyby mají dialog a log `.runtime/startup-error.log`; jednotlivé starty mají oddělené diagnostické logy.
 
-Při každém startu se otevře **Co je nového**. Sekce **Vaše firma, vaše logo** dovoluje uložit název firmy a obrázek PNG/JPEG (do 5 MB). Logo se převede na PNG s nejdelší stranou nejvýše 1024 px a uloží vedle lokálních dat do `branding/`. Použije se v hlavičce, přehledu novinek a při dalším startu. Bez nastavení se používá současná značka aplikace. Značka není součástí exportu osobních dat.
+Při každém startu se otevře hlavní obrazovka **Psychická pohoda**. Přehled **Co je nového** je dostupný tlačítkem v hlavičce. Sekce **Vaše firma, vaše logo** dovoluje uložit název firmy a obrázek PNG/JPEG (do 5 MB). Logo se převede na PNG s nejdelší stranou nejvýše 1024 px a uloží vedle lokálních dat do `branding/`. Použije se v hlavičce, přehledu novinek a při dalším startu. Bez nastavení se používá současná značka aplikace. Značka není součástí exportu osobních dat.
 
 ## Funkce a ukládání
 
@@ -82,3 +82,15 @@ Na problému, strategii nebo rutině otevřete pravým kliknutím nabídku **Ozn
 Dvacet slotů pro vlastní problémy a 49 předpřipravených životních situací s pětikrokovými checklisty. Výběr problému otevírá modal souvisejících workflow. V knihovně lze hledat podle účelu, problému, oblasti i tagu a určit cílový slot. Vlastní situace a upravitelné tagy jsou podporované.
 
 Tagy propojují postupy i problémy mezi jednotlivými sloty. Každý slot může mít více různých workflow s vlastním průběhem. Poznámky a zaškrtnutí se zachovají při změně problému, ukládají se automaticky a přenášejí v záloze. Oblíbené označíte pravým kliknutím na kartu v modalu.
+
+## Pravý panel · Moje perky
+
+Pod motivy a kartou Jen u tebe je první modul Psychická pohoda a možnost přidat libovolný počet dalších modulů. Výběr nabízí sedm směrů: Psychická pohoda, Finanční svoboda, Časová svoboda, Lokalizační pohoda, Politická pohoda, Látková pohoda a Skill pohoda. Vlastní modul lze pojmenovat dole ve výběru.
+
+Tři modaly: způsoby hledání → nalezené problémy a pozorování → moduly. Pozorování má vlastní evidenci a stav ověření, může zůstat otevřené nebo být propojeno s více moduly. Samostatný modul lze vytvořit i bez problému.
+
+Editor spojuje souvislosti, situaci, řešení, checklist workflow, dokumentaci, návrh budoucí automatizace a další chyby či poznatky. Skill pohoda má prostor pro nápady budoucích aktualizací. Počet modulů, kroků ani poznatků není pevně omezen. Automatizace je zatím dokumentovaný návrh. Data jsou součástí automatického ukládání a záloh.
+
+## Hlavní obrazovka · Psychická pohoda
+
+Psychická pohoda je pro všechny výchozí vstup do projektu. Pole na hlavní obrazovce sdílejí data se základním modulem, další perky a šest nástrojových sekcí mají vlastní odkazy. První tlačítko navigace vrací domů. Chybějící základní modul se automaticky doplní, původní obsah ostatních modulů se zachová. Novinky se otevírají z hlavičky.

@@ -1,3 +1,19 @@
+## 2026-11-14 · Psychická pohoda jako základní baterie projektu
+
+- Nová výchozí hlavní obrazovka pro všechny, první položka navigace a přímé odkazy do šesti nástrojových sekcí.
+- Souvislosti a záměr jsou sdílené se základním modulem; ostatní perky jsou dostupné z hlavního prostoru.
+- Doplnění základního modulu do starších kolekcí bez přepisování existujících dat.
+- Přehled novinek se otevírá z hlavičky, hlavní prostor při startu nepřekrývá.
+
+## 2026-11-14 · Moje perky a Psychická pohoda
+
+- Moduly pod oběma původními kartami pravého panelu; prvním je Psychická pohoda.
+- Tři propojené modaly: deset metod hledání, nalezená pozorování a výběr sedmi směrů pohody.
+- Evidence ověření, odložených a nepotvrzených pozorování; propojení s více moduly.
+- Vlastní workflow, dokumentace, poznámky a návrh budoucí automatizace v každém modulu.
+- Otevřený počet modulů, chyb a poznatků; Skill pohoda pro nápady na budoucí aktualizace.
+- Automatické ukládání, validace a zálohy se zpětnou kompatibilitou.
+
 ## 2026-11-14 · 06 Cheats & Lifehacks
 
 - Šestá sekce, 20 slotů pro životní situace a 49 workflow v sedmi oblastech.

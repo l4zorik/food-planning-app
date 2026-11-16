@@ -7,7 +7,7 @@ function lifeNode(tag, text, className) {
   if (className) node.className = className
   return node
 }
-export function setupLifehacks({ getState, save }) {
+export function setupLifehacks({ getState, save, onFocus }) {
   const $ = id => document.getElementById(id)
   const problemDialog = $('life-problem-picker'), workflowDialog = $('life-workflow-picker')
   let problemIndex = null, workflowIndex = null, problemFavorites = false, workflowFavorites = false
@@ -55,7 +55,7 @@ export function setupLifehacks({ getState, save }) {
   function chooseProblem(problem) {
     if (problemIndex === null) return
     const index = problemIndex, slot = data().slots[index]
-    slot.problem = problem; slot.active = true; save(); render(); openWorkflows(index)
+    slot.problem = problem; save(); render(); openWorkflows(index)
   }
   function renderProblems() {
     problemMenu.close()
@@ -128,7 +128,10 @@ export function setupLifehacks({ getState, save }) {
       const card = lifeNode('article', undefined, 'life-slot'), heading = lifeNode('div', undefined, 'life-slot-heading')
       const activeLabel = lifeNode('label'), active = lifeNode('input')
       active.type = 'checkbox'; active.checked = slot.active
-      active.addEventListener('change', () => { slot.active = active.checked; card.classList.toggle('is-active', slot.active); save() })
+      active.addEventListener('change', () => {
+        if (onFocus) { onFocus(index, active.checked); return }
+        slot.active = active.checked; card.classList.toggle('is-active', slot.active); save()
+      })
       activeLabel.append(active, lifeNode('span', 'Teď řeším'))
       heading.append(lifeNode('h3', `Slot ${String(index + 1).padStart(2, '0')}`), activeLabel)
       card.classList.toggle('is-active', slot.active)

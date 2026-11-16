@@ -2,6 +2,10 @@
 export const release = {
   version: '0.3.0', date: '2026-11-14',
   notes: [
+    { title: 'Psychická pohoda · nový hlavní prostor', text: 'Po spuštění se všem otevře Psychická pohoda jako základní baterie projektu. Zápisy na hlavní obrazovce jsou propojené se základním modulem. Další perky i všech šest nástrojových sekcí jsou dostupné přímo odtud. Přehled novinek otevřete z hlavičky.' },
+    { title: 'Moje perky · celek pod pravým panelem', text: 'Pod kartami Tvůj prostor a Jen u tebe najdete první modul Psychická pohoda. Další moduly lze přidávat bez pevného počtu: Finanční svoboda, Časová svoboda, Lokalizační pohoda, Politická pohoda, Látková pohoda, Skill pohoda i vlastní směry.' },
+    { title: 'Pozorování → souvislosti → modul', text: 'Tři propojené modaly nabízejí způsoby hledání, vlastní nalezené problémy a výsledné perky. Pozorování může být k ověření, potvrzené, odložené nebo nepotvrzené. Jeden záznam lze propojit s více moduly.' },
+    { title: 'Dokumentace a prostor pro další rozvoj', text: 'Každý modul spojuje výchozí situaci, řešení, vlastní workflow, technickou dokumentaci a návrh budoucí automatizace. Chyby a poznatky nemají pevný počet; Skill pohoda má prostor pro nápady na další aktualizace. Vše se automaticky ukládá a zálohuje.' },
     { title: '06 Cheats & Lifehacks', text: 'Nová sekce s 20 sloty pro vaše problémy a knihovnou 49 plánovacích workflow. Hledejte podle účelu, problému, oblasti a tagů. Každý postup má pět konkrétních kroků, vlastní odškrtnutí a automatické ukládání.' },
     { title: 'Problémy propojené tagy', text: 'Výběr životní situace nabídne související workflow. Společné tagy také propojí vaše problémy napříč sloty. Můžete zadat vlastní situaci, upravit její tagy a přidat více postupů do jednoho slotu. Oblíbené fungují i v nových modalech.' },
     { title: 'Výběrové modaly ve všech pěti slotech', text: 'Výběr problémů, 50 strategií a 15 rutin je dostupný v každém slotu, pro libovolné i vlastní téma. Hlavička ukazuje aktuální slot a problém; každý slot má svůj plán, dny a checklisty.' },
@@ -20,7 +24,7 @@ export const release = {
     { title: 'Záloha s aktuálním datem', text: 'Název zálohy se při každém exportu vytvoří z aktuálního místního data počítače. Dialog navrhne nový název místo názvu předchozí zálohy.' },
     { title: 'Příjemnější první dojem', text: 'Úvodní obrazovka s logem a průběhem spouštění. Zástupce Start-Lite.vbs otevírá aplikaci bez terminálu.' },
     { title: 'Vaše značka na prvním místě', text: 'Nastavte název firmy a vlastní logo. Při příštím spuštění vás přivítá vaše značka.' },
-    { title: 'Přehled novinek při každém startu', text: 'Všechny změny najdete tady. K přehledu se kdykoli vrátíte tlačítkem Co je nového.' },
+    { title: 'Přehled novinek v hlavičce', text: 'Všechny změny najdete pod tlačítkem Co je nového. Po spuštění vás přivítá hlavní obrazovka Psychická pohoda.' },
     { title: 'Lepší kontrola spouštění', text: 'Start čeká na načtení rozhraní. Opakované spuštění přepne do otevřeného okna; chyby mají vlastní dialog a uloženou diagnostiku.' },
   ],
 }
@@ -68,5 +72,4 @@ export async function setupUpdates(api) {
   for (const id of ['continue-startup', 'close-updates']) $(id).addEventListener('click', () => dialog.close())
   try { applyBrand(await api.loadBrand()) }
   catch { $('brand-feedback').textContent = 'Značku se nepodařilo načíst. Můžete ji nastavit znovu.' }
-  dialog.showModal()
 }

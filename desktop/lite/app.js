@@ -6,12 +6,20 @@ import { setupKeepDrag } from './keep-drag.js'
 import { applyKeepStyle, renderRichText } from './keep-style.js'
 import { setupManagement } from './management.js'
 import { setupLifehacks } from './lifehacks.js'
+import { setupPerks } from './perks.js'
+import { setupLifeFocus } from './life-focus.js'
+import { setupProjectAssistant } from './project-assistant.js'
+import { setupSubscriptions } from './subscriptions.js'
 
 const api = window.personalDesktop
 const $ = id => document.getElementById(id)
 let state = {}, ready = false, attachment = null, saveTimer, pending = Promise.resolve(), revision = 0
 const management = setupManagement({ getState: () => state, save: queueSave })
-const lifehacks = setupLifehacks({ getState: () => state, save: queueSave })
+const lifehacks = setupLifehacks({ getState: () => state, save: () => { queueSave(); lifeFocus.render() }, onFocus: (index, enabled) => lifeFocus.setLifeSlot(index, enabled) })
+const perks = setupPerks({ getState: () => state, save: queueSave })
+const lifeFocus = setupLifeFocus({ getState: () => state, save: queueSave, onSourceChange: () => lifehacks.render() })
+const projectAssistant = setupProjectAssistant({ getState: () => state, save: queueSave, api, flush })
+const subscriptions = setupSubscriptions({ getState: () => state, save: queueSave })
 const keepActions = setupKeepActions({
   getKeeps: () => state.keeps || [],
   update: (id, replacement) => { state.keeps = (state.keeps || []).map(keep => keep.id === id ? replacement : keep); queueSave(); renderKeeps() },
@@ -47,9 +55,11 @@ function flush() {
   return operation
 }
 function selectView(view) {
+  const views = ['home','week','shopping','keeps','erp','management','cheats']
+  if (!views.includes(view)) view = 'home'
   keepActions.close()
-  for (const panel of ['week','shopping','keeps','erp','management','cheats']) $(panel).hidden = panel !== view
-  document.querySelector('.welcome').hidden = ['erp', 'management', 'cheats'].includes(view)
+  for (const panel of views) $(panel).hidden = panel !== view
+  document.querySelector('.welcome').hidden = ['home', 'erp', 'management', 'cheats'].includes(view)
   for (const button of document.querySelectorAll('[data-view]')) button.setAttribute('aria-pressed', String(button.dataset.view === view))
 }
 
@@ -224,13 +234,13 @@ $('restore-backup').addEventListener('click', async () => {
 })
 $('save-pdf').addEventListener('click', async () => { try { await flush(); await api.savePdf() } catch (e) { error(e.message) } })
 for (const button of document.querySelectorAll('[data-view]')) button.addEventListener('click', () => selectView(button.dataset.view))
-function renderAll() { renderWeek(); renderShopping(); renderKeeps(); management.render(); lifehacks.render(); applyTheme() }
+function renderAll() { renderWeek(); renderShopping(); renderKeeps(); management.render(); perks.render(); lifeFocus.render(); lifehacks.render(); projectAssistant.render(); subscriptions.render(); applyTheme() }
 
 if (!api) { error('Tuto aplikaci spusť pomocí Electronu, ne jako běžnou webovou stránku.'); document.querySelectorAll('button,input,textarea,select').forEach(control => control.disabled = true) }
 else {
   api.onClosing(async () => { try { if (ready) await flush(); await api.close() } catch (e) { error(e.message); status('Uložení selhalo, okno zůstává otevřené') } })
   try {
-    const loaded = await api.load(); state = loaded.state; $('data-directory').textContent = loaded.directory; ready = true; renderAll(); status('Uloženo v PC')
+    const loaded = await api.load(); state = loaded.state; $('data-directory').textContent = loaded.directory; ready = true; renderAll(); selectView('home'); status('Uloženo v PC')
     setInterval(applyTheme, 30000)
     window.addEventListener('focus', applyTheme)
   } catch (e) { error(e.message); status('Data nelze načíst') }
